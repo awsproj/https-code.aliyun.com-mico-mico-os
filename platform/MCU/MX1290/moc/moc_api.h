@@ -181,6 +181,8 @@ typedef struct
     OSStatus (*spi_transfer)( const mico_spi_device_t* spi, const mico_spi_message_segment_t* segments,
                               uint16_t number_of_segments );
     OSStatus (*spi_finalize)( const mico_spi_device_t* spi );
+	OSStatus (*hal_spi_send)( const mico_spi_device_t* spi, uint8_t *buf, uint32_t size);
+	void (*hal_spi_reg_send_callback)( const mico_spi_device_t* spi, void (*callback)(void));
 } spi_api_t;
 
 typedef struct {
