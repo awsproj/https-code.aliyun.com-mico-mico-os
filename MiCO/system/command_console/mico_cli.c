@@ -544,8 +544,8 @@ static const struct cli_command built_ins[] = {
   
   /// WIFI
   {"scan", "scan ap", wifiscan_Command}, 
-  {"wifistate", "Show wifi state", wifistate_Command}, 
-  {"wifidebug", "wifidebug on/off", wifidebug_Command}, 
+  {"rltk_dump_reg", "rltk_dump_reg()", wifistate_Command}, 
+  {"rltk_write_reg", "rltk_write_reg(offset, value)", wifidebug_Command}, 
   
   // network
   {"ifconfig", "Show IP address", ifconfig_Command}, 
@@ -561,7 +561,7 @@ static const struct cli_command built_ins[] = {
   {"memdump", "<addr> <length>", memory_dump_Command}, 
   {"memset", "<addr> <value 1> [<value 2> ... <value n>]", memory_set_Command}, 
   {"memp", "print memp list", memp_dump_Command},
-  {"wifidriver", "show wifi driver status", driver_state_Command}, // bus credite, flow control...
+  {"rltk_read_reg", "rltk_read_reg(offset)", driver_state_Command}, // bus credite, flow control...
   {"reboot", "reboot MiCO system", reboot},
   {"tftp",     "tftp",                        tftp_Command},
   {"time",     "system time",                 uptime_Command},

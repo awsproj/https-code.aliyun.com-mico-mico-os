@@ -126,7 +126,7 @@ OSStatus mico_system_init( mico_Context_t* in_context )
 #endif
   else{
     system_log("Available configuration. Starting Wi-Fi connection...");
-    system_connect_wifi_fast( sys_context );
+    system_connect_wifi_normal( sys_context );
   }
 #endif
   
