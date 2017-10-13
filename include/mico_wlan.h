@@ -645,7 +645,7 @@ void wifimgr_debug_enable(bool enable);
   * @param len: the length of this packet, include FCS
   * @param rssi: the rssi of the received packet.
   */
-typedef void (*monitor_cb_t)(uint8_t*data, int len);
+typedef void (*monitor_cb_t)(uint8_t*data, int len, int rssi);
 enum {
 	WLAN_RX_BEACON,    /* receive beacon packet */
 	WLAN_RX_PROBE_REQ, /* receive probe request packet */
