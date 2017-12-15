@@ -184,6 +184,7 @@ typedef struct
 	OSStatus (*hal_spi_send)( const mico_spi_device_t* spi, uint8_t *buf, uint32_t size);
 	void (*hal_spi_reg_send_callback)( const mico_spi_device_t* spi, void (*callback)(void));
     OSStatus (*hal_spi_recv)( const mico_spi_device_t* spi, uint8_t *buf, uint32_t size);
+    void (*hal_spi_reg_recv_callback)( const mico_spi_device_t* spi, void (*callback)(void));
 } spi_api_t;
 
 typedef struct {

@@ -679,6 +679,11 @@ OSStatus hal_spi_recv( const mico_spi_device_t* spi, uint8_t *buf, uint32_t size
   return lib_api_p->spi_apis->hal_spi_recv(spi, buf, size);
 }
 
+void hal_spi_reg_recv_callback( const mico_spi_device_t* spi, void (*callback)(void))
+{
+	lib_api_p->spi_apis->hal_spi_reg_recv_callback(spi, callback);
+}
+
 OSStatus MicoSpiTransfer( const mico_spi_device_t* spi, const mico_spi_message_segment_t* segments, uint16_t number_of_segments )
 {
 	return lib_api_p->spi_apis->spi_transfer(spi, segments, number_of_segments );
