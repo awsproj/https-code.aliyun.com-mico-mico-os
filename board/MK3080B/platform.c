@@ -200,4 +200,112 @@ bool MicoExtShouldEnterTestMode(void)
 }
 #endif
 
+OSStatus MicoUserFlashErase(uint32_t off_set, uint32_t size)
+{
+  OSStatus err = kNoErr;
+  uint32_t ota_partition_size;
+  uint32_t usr_partition_size;
 
+  ota_partition_size = MicoFlashGetInfo(MICO_PARTITION_OTA_TEMP)->partition_length;
+  usr_partition_size = MicoFlashGetInfo(MICO_PARTITION_USER)->partition_length;  
+
+  require_action_quiet( size > 0 && off_set + size <= ota_partition_size + usr_partition_size, exit, err = kParamErr );
+
+  if(off_set < ota_partition_size)
+  {
+    if(off_set + size > ota_partition_size)
+    {
+      MicoFlashErase(MICO_PARTITION_OTA_TEMP, off_set, ota_partition_size - off_set);
+      MicoFlashErase(MICO_PARTITION_USER, 0, size - (ota_partition_size - off_set));
+    }
+    else
+    {
+      MicoFlashErase(MICO_PARTITION_OTA_TEMP, off_set, size);
+    }
+  }
+  else
+  {
+    MicoFlashErase(MICO_PARTITION_USER, off_set - ota_partition_size, size);
+  }
+
+exit:
+  return err;
+}
+
+OSStatus MicoUserFlashWrite(volatile uint32_t* off_set, uint8_t* inBuffer ,uint32_t inBufferLength)
+{
+  OSStatus err = kNoErr;
+  uint32_t ota_partition_size;
+  uint32_t usr_partition_size;
+  uint32_t offset;
+
+  ota_partition_size = MicoFlashGetInfo(MICO_PARTITION_OTA_TEMP)->partition_length;
+  usr_partition_size = MicoFlashGetInfo(MICO_PARTITION_USER)->partition_length;  
+
+  require_action_quiet( off_set != NULL && inBuffer != NULL && inBufferLength > 0 && *off_set + inBufferLength <= ota_partition_size + usr_partition_size, exit, err = kParamErr );
+
+  if(*off_set < ota_partition_size)
+  {
+    if(*off_set + inBufferLength > ota_partition_size)
+    {
+      offset = *off_set;
+      MicoFlashWrite(MICO_PARTITION_OTA_TEMP, &offset, inBuffer, ota_partition_size - *off_set);
+      offset = 0;
+      MicoFlashWrite(MICO_PARTITION_USER, &offset, inBuffer + ota_partition_size - *off_set, inBufferLength - (ota_partition_size - *off_set));
+    }
+    else
+    {
+      offset = *off_set;
+      MicoFlashWrite(MICO_PARTITION_OTA_TEMP, &offset, inBuffer, inBufferLength);
+    }
+  }
+  else
+  {
+    offset = *off_set - ota_partition_size;
+    MicoFlashWrite(MICO_PARTITION_USER, &offset, inBuffer, inBufferLength);
+  }
+
+  *off_set += inBufferLength;
+
+exit:
+  return err;
+}
+
+OSStatus MicoUserFlashRead(volatile uint32_t* off_set, uint8_t* inBuffer ,uint32_t inBufferLength)
+{
+  OSStatus err = kNoErr;
+  uint32_t ota_partition_size;
+  uint32_t usr_partition_size;
+  uint32_t offset;
+
+  ota_partition_size = MicoFlashGetInfo(MICO_PARTITION_OTA_TEMP)->partition_length;
+  usr_partition_size = MicoFlashGetInfo(MICO_PARTITION_USER)->partition_length;  
+
+  require_action_quiet( off_set != NULL && inBuffer != NULL && inBufferLength > 0 && *off_set + inBufferLength <= ota_partition_size + usr_partition_size, exit, err = kParamErr );
+
+  if(*off_set < ota_partition_size)
+  {
+    if(*off_set + inBufferLength > ota_partition_size)
+    {
+      offset = *off_set;
+      MicoFlashRead(MICO_PARTITION_OTA_TEMP, &offset, inBuffer, ota_partition_size - *off_set);
+      offset = 0;
+      MicoFlashRead(MICO_PARTITION_USER, &offset, inBuffer + ota_partition_size - *off_set, inBufferLength - (ota_partition_size - *off_set));
+    }
+    else
+    {
+      offset = *off_set;
+      MicoFlashRead(MICO_PARTITION_OTA_TEMP, &offset, inBuffer, inBufferLength);
+    }
+  }
+  else
+  {
+    offset = *off_set - ota_partition_size;
+    MicoFlashRead(MICO_PARTITION_USER, &offset, inBuffer, inBufferLength);
+  }
+
+  *off_set += inBufferLength;
+
+exit:
+  return err;
+}
