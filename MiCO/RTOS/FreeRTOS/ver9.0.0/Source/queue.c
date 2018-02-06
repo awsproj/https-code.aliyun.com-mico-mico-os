@@ -838,9 +838,7 @@ Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 				#endif /* configUSE_QUEUE_SETS */
 
 				taskEXIT_CRITICAL();
-#ifdef MXCHIP
-                event_rx_cb(pxQueue);
-#endif                
+     
 				return pdPASS;
 			}
 			else
@@ -968,9 +966,7 @@ Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 			called here even though the disinherit function does not check if
 			the scheduler is suspended before accessing the ready lists. */
 			( void ) prvCopyDataToQueue( pxQueue, pvItemToQueue, xCopyPosition );
-#ifdef MXCHIP
-                event_rx_cb(pxQueue);
-#endif
+
 			/* The event list is not altered if the queue is locked.  This will
 			be done when the queue is unlocked later. */
 			if( cTxLock == queueUNLOCKED )
