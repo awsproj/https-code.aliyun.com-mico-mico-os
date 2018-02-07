@@ -17,26 +17,10 @@
 
 #pragma once
 
-#include "gpio.h"
-#include "uart.h"
-#include "irqs.h"
-#include "clk.h"
-#include "uart.h"
-#include "gpio.h"
-#include "spi_flash.h"
-#include "watchdog.h"
-#include "timeout.h"
-#include "cache.h"
-#include "delay.h"
-#include "RingBufferUtils.h"
-#include "mico_rtos.h"
-#include "platform_config.h"
-#include "debug.h"
-#include "common.h"
-#include "platform_logging.h"
-#include "wakeup.h"
-#include "rtc.h"
+#include "stm32l4xx.h"
 
+#include "mico_rtos.h"
+#include "RingBufferUtils.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -51,21 +35,6 @@ extern "C"
  *                    Constants
  ******************************************************/
 
-#define NUMBER_OF_GPIO_IRQ_LINES  (5)
-
-/* Invalid UART port number */
-#define INVALID_UART_PORT_NUMBER  (0xff)
-
- /* SPI1 to SPI3 */
-#define NUMBER_OF_SPI_PORTS       (3)
-
-#define		GPIOA					(0x00)
-#define		GPIOB					(0x0A)
-#define		GPIOC					(0x14)
-
-#define		FUART					(0x00)
-#define		BUART					(0x01)
-
 /******************************************************
  *                   Enumerations
  ******************************************************/
@@ -74,39 +43,49 @@ extern "C"
  *                 Type Definitions
  ******************************************************/
 
+
+/**
+ * UART flow control for driver
+ */
+typedef enum
+{
+    FLOW_CONTROL_DISABLED_DRV,
+    FLOW_CONTROL_CTS_DRV,
+    FLOW_CONTROL_RTS_DRV,
+    FLOW_CONTROL_CTS_RTS_DRV
+} platform_uart_driver_flow_control_t;
+
 /******************************************************
  *                    Structures
  ******************************************************/
 
 typedef struct
 {
-    uint8_t                   port;
-    uint8_t                   pin;
+    uint8_t unimplemented;
 } platform_gpio_t;
 
 typedef struct
 {
-    const platform_gpio_t*    pin_adc;
+    uint8_t unimplemented;
 } platform_adc_t;
 
 typedef struct
 {
-    const platform_gpio_t*    pin_pwm;
+    uint8_t unimplemented;
 } platform_pwm_t;
 
 
 /* DMA can be enabled by setting SPI_USE_DMA */
 typedef struct
 {
-    const platform_gpio_t*    pin_mosi;
-    const platform_gpio_t*    pin_miso;
-    const platform_gpio_t*    pin_clock;
+    uint8_t unimplemented;
 } platform_spi_t;
 
 typedef struct
 {
-    platform_spi_t*           peripheral;
-    mico_mutex_t              spi_mutex;
+    platform_spi_t*     peripheral;
+    mico_mutex_t        spi_mutex;
+    mico_bool_t         initialized;
 } platform_spi_driver_t;
 
 typedef struct
@@ -116,8 +95,7 @@ typedef struct
 
 typedef struct
 {
-    const platform_gpio_t*    pin_scl;
-    const platform_gpio_t*    pin_sda;
+    uint8_t unimplemented;
 } platform_i2c_t;
 
 typedef struct
@@ -125,41 +103,34 @@ typedef struct
     mico_mutex_t              i2c_mutex;
 } platform_i2c_driver_t;
 
+typedef void (* wakeup_irq_handler_t)(void *arg);
+
 typedef struct
 {
-    uint8_t                   uart;
-    const platform_gpio_t*    pin_tx;
-    const platform_gpio_t*    pin_rx;
-    const platform_gpio_t*    pin_cts;
-    const platform_gpio_t*    pin_rts;
+    uint32_t  port_id;
 } platform_uart_t;
 
 typedef struct
 {
-    platform_uart_t*           peripheral;
-    ring_buffer_t*             rx_buffer;
-    volatile int               buart_fifo_head;
-#ifndef NO_MICO_RTOS
+    uint8_t                    id;
+    ring_buffer_t*             rx_ring_buffer;
     mico_semaphore_t           rx_complete;
     mico_semaphore_t           tx_complete;
     mico_mutex_t               tx_mutex;
     mico_semaphore_t           sem_wakeup;
-#else
-    volatile bool              rx_complete;
-    volatile bool              tx_complete;
-#endif
     volatile uint32_t          tx_size;
     volatile uint32_t          rx_size;
     volatile OSStatus          last_receive_result;
     volatile OSStatus          last_transmit_result;
+    platform_uart_driver_flow_control_t   flow_control;
 } platform_uart_driver_t;
+
 
 typedef struct
 {
     uint32_t                   flash_type;
     uint32_t                   flash_start_addr;
     uint32_t                   flash_length;
-    uint32_t                   flash_protect_opt;
 } platform_flash_t;
 
 typedef struct
@@ -177,20 +148,8 @@ typedef struct
 /******************************************************
  *               Function Declarations
  ******************************************************/
-OSStatus platform_gpio_irq_manager_init      ( void );
-
-OSStatus platform_mcu_powersave_init         ( void );
-
-OSStatus platform_rtc_init                   ( void );
-
-void     platform_uart_irq                   ( platform_uart_driver_t* driver );
 
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
-
-
-
-
-

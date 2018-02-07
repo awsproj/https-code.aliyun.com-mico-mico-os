@@ -10,8 +10,6 @@
 
 NAME = STM32L4xx
 
-EXTRA_TARGET_MAKEFILES +=  ./mico-os/platform/MCU/STM32L4xx/stm32l4xx_standard_targets.mk
-
 # Host architecture is ARM Cortex M4
 HOST_ARCH := Cortex-M4
 
@@ -25,9 +23,7 @@ GLOBAL_INCLUDES := . \
                    ../../$(TOOLCHAIN_NAME) \
                    ../../$(HOST_ARCH) \
                    ../../$(HOST_ARCH)/CMSIS \
-                   peripherals \
-                   hwlib/CMSIS/Include \
-                   hwlib/inc
+                   peripherals
 
 # Global defines
 GLOBAL_DEFINES  := 
@@ -42,11 +38,12 @@ GLOBAL_LDFLAGS  += $$(CLIB_LDFLAGS_NANO_FLOAT)
 GLOBAL_LDFLAGS  += -nostartfiles
 GLOBAL_LDFLAGS  += -Wl,--defsym,__STACKSIZE__=$$($(RTOS)_START_STACK)
 GLOBAL_LDFLAGS  += -L ./platform/MCU/$(NAME)/$(TOOLCHAIN_NAME)
-GLOBAL_LDFLAGS  += mico-os/platform/MCU/STM32L4xx/hwlib/libdriver.a
+
 # Components
 $(NAME)_COMPONENTS += $(TOOLCHAIN_NAME)
 $(NAME)_COMPONENTS += MCU/STM32L4xx/peripherals
 $(NAME)_COMPONENTS += utilities
+$(NAME)_COMPONENTS += MCU/STM32L4xx/stm32l431rc
 
 # Source files
 $(NAME)_SOURCES := ../../$(HOST_ARCH)/crt0_$(TOOLCHAIN_NAME).c \
@@ -55,9 +52,9 @@ $(NAME)_SOURCES := ../../$(HOST_ARCH)/crt0_$(TOOLCHAIN_NAME).c \
                    ../platform_nsclock.c \
                    ../mico_platform_common.c \
                    platform_init.c \
-                   main.c \
-                   startup.s \
                    stubs.c
+
+EXTRA_TARGET_MAKEFILES +=  ./mico-os/platform/MCU/STM32L4xx/download.mk
 
 ifeq ($(APP),bootloader)
 ####################################################################################

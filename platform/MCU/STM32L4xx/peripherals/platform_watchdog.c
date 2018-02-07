@@ -49,45 +49,26 @@
 
 OSStatus platform_watchdog_init( uint32_t timeout_ms )
 {
-// PLATFORM_TO_DO
-#ifdef MICO_DISABLE_WATCHDOG
+  platform_log("unimplemented");
   return kUnsupportedErr;
-#else
-  OSStatus err = kNoErr;
-  require_action( timeout_ms < 4000 && timeout_ms > 0, exit, err = kParamErr );
-
-  if ( timeout_ms > 3000 )
-  	WdgEn(WDG_STEP_4S);
-  else if ( timeout_ms > 1000 )
-  	WdgEn(WDG_STEP_3S);
-  else
-  	WdgEn(WDG_STEP_1S);
-
-exit:
-	return err;
-#endif
 }
 
 OSStatus platform_watchdog_deinit( void )
 {
-    // PLATFORM_TO_DO
-    WdgDis();
-    return kNoErr;
+  platform_log("unimplemented");
+  return kUnsupportedErr;
 }
 
 bool platform_watchdog_check_last_reset( void )
 {
-    return false;
+  platform_log("unimplemented");
+  return kUnsupportedErr;
 }
 
 OSStatus platform_watchdog_kick( void )
 {
-#ifndef MICO_DISABLE_WATCHDOG
-	WdgFeed();
-	return kNoErr;
-#else
-	return kNoErr;
-#endif
+  platform_log("unimplemented");
+  return kUnsupportedErr;
 }
 
 

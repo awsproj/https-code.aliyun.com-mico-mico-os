@@ -74,7 +74,7 @@ extern "C"
 
 /************************************************************************
  * CPU clock. */
-#define MCU_CLOCK_HZ            (96000000)
+#define MCU_CLOCK_HZ            (80000000)
 
 /************************************************************************
  * How many bits are used in NVIC priority configuration */

@@ -74,32 +74,7 @@ extern WEAK void PlatformEasyLinkButtonLongPressedCallback(void);
 *               Variables Definitions
 ******************************************************/
 
-const platform_gpio_t platform_gpio_pins[] =
-{
-//  /* Common GPIOs for internal use */
-    //  /* GPIOs for external use */
-    [MICO_GPIO_1]                         = {GPIOB, 27},
-    [MICO_GPIO_2]                         = {GPIOB, 24},
-    [MICO_GPIO_3]                         = {GPIOC, 14}, //swdio
-
-    [MICO_GPIO_7]                         = {GPIOB, 20},
-    [MICO_GPIO_8]                         = {GPIOB, 8},
-    [MICO_GPIO_9]                         = {GPIOB, 7}, // debug uart tx
-    [MICO_GPIO_10]                        = {GPIOB, 6}, // debug uart rx
-    [MICO_GPIO_11]                        = {GPIOA, 25}, // easylink
-    [MICO_GPIO_12]                        = {GPIOA, 23}, // USB DM
-    [MICO_GPIO_13]                        = {GPIOA, 22}, // USB DP
-    [MICO_GPIO_16]                        = {GPIOB, 26}, // BOOT
-    [MICO_GPIO_17]                        = {GPIOA, 10}, // RESET
-    [MICO_GPIO_20]                        = {GPIOB, 31}, // user uart rts
-    [MICO_GPIO_21]                        = {GPIOC, 0},  // user uart cts
-    [MICO_GPIO_22]                        = {GPIOB, 28}, // user uart tx
-    [MICO_GPIO_23]                        = {GPIOB, 29}, // user uart rx
-    [MICO_GPIO_26]                        = {GPIOC, 11},
-    [MICO_GPIO_27]                        = {GPIOC, 12},
-    [MICO_GPIO_28]                        = {GPIOC, 13}, // SWCLK
-    [MICO_GPIO_30]                        = {GPIOB, 25}, // status
-};
+const platform_gpio_t *platform_gpio_pins = NULL;
 
 const platform_adc_t *platform_adc_peripherals = NULL;
 
@@ -111,120 +86,25 @@ platform_spi_driver_t *platform_spi_drivers = NULL;
 
 const platform_spi_slave_driver_t *platform_spi_slave_drivers = NULL;
 
-const platform_uart_t platform_uart_peripherals[] =
-{
-  [MICO_UART_DEBUG] =
-  {
-    .uart                            = FUART,
-    .pin_tx                          = &platform_gpio_pins[STDIO_UART_TX],
-    .pin_rx                          = &platform_gpio_pins[STDIO_UART_RX],
-    .pin_cts                         = NULL,
-    .pin_rts                         = NULL,
-  },
-  [MICO_UART_DATA] =
-  {
-    .uart                            = BUART,
-    .pin_tx                          = &platform_gpio_pins[APP_UART_TX],
-    .pin_rx                          = &platform_gpio_pins[APP_UART_RX],
-    .pin_cts                         = NULL,
-    .pin_rts                         = NULL,
-  },
-};
+const platform_uart_t *platform_uart_peripherals = NULL;
 
-platform_uart_driver_t platform_uart_drivers[MICO_UART_MAX];
+platform_uart_driver_t *platform_uart_drivers = NULL;
 
 const platform_i2c_t *platform_i2c_peripherals = NULL;
 
 /* Flash memory devices */
-const platform_flash_t platform_flash_peripherals[] =
-{
-  [MICO_FLASH_SPI] =
-  {
-    .flash_type                   = FLASH_TYPE_SPI,
-    .flash_start_addr             = 0x000000,
-    .flash_length                 = 0x200000,
-    .flash_protect_opt            = FLASH_HALF_PROTECT,
-  }
-};
+const platform_flash_t *platform_flash_peripherals = NULL;
 
-platform_flash_driver_t platform_flash_drivers[MICO_FLASH_MAX];
+platform_flash_driver_t *platform_flash_drivers = NULL;
 
 /* Logic partition on flash devices */
-const mico_logic_partition_t mico_partitions[] =
-{
-  [MICO_PARTITION_BOOTLOADER] =
-  {
-    .partition_owner           = MICO_FLASH_SPI,
-    .partition_description     = "Bootloader",
-    .partition_start_addr      = 0x0,
-    .partition_length          = 0xA000,    //40k bytes + 4k bytes empty space
-    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_DIS,
-  },
-  [MICO_PARTITION_APPLICATION] =
-  {
-    .partition_owner           = MICO_FLASH_SPI,
-    .partition_description     = "Application",
-    .partition_start_addr      = 0xB000,
-    .partition_length          = 0xC0000,   //768k bytes
-    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_DIS,
-  },
-  [MICO_PARTITION_ATE] =
-  {
-    .partition_owner           = MICO_FLASH_SPI,
-    .partition_description     = "ATE",
-    .partition_start_addr      = 0xCB000,
-    .partition_length          = 0x50000,  //320k bytes
-    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_DIS,
-  },
-  [MICO_PARTITION_RF_FIRMWARE] =
-  {
-    .partition_owner           = MICO_FLASH_NONE,
-    .partition_description     = "RF Firmware",
-    .partition_start_addr      = 0x0,
-    .partition_length          = 0x0, 
-    .partition_options         = PAR_OPT_READ_DIS | PAR_OPT_WRITE_DIS,
-  },
-  [MICO_PARTITION_OTA_TEMP] =
-  {
-    .partition_owner           = MICO_FLASH_SPI,
-    .partition_description     = "OTAStorage",
-    .partition_start_addr      = 0x11B000,
-    .partition_length          = 0xC0000, //768k bytes
-    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
-  },
-  [MICO_PARTITION_PARAMETER_1] =
-  {
-    .partition_owner           = MICO_FLASH_SPI,
-    .partition_description     = "PARAMETER1",
-    .partition_start_addr      = 0x1DB000,
-    .partition_length          = 0x1000, // 4k bytes
-    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
-  },
-  [MICO_PARTITION_PARAMETER_2] =
-  {
-    .partition_owner           = MICO_FLASH_SPI,
-    .partition_description     = "PARAMETER2",
-    .partition_start_addr      = 0x1DC000,
-    .partition_length          = 0x1000, //4k bytes
-    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
-  }
-};
+const mico_logic_partition_t *mico_partitions = NULL;
 
 
 
 /******************************************************
 *           Interrupt Handler Definitions
 ******************************************************/
-
-MICO_RTOS_DEFINE_ISR( FuartInterrupt )
-{
-  platform_uart_irq( &platform_uart_drivers[MICO_UART_DEBUG] );
-}
-
-MICO_RTOS_DEFINE_ISR( BuartInterrupt )
-{
-  platform_uart_irq( &platform_uart_drivers[MICO_UART_DATA] );
-}
 
 /******************************************************
 *               Function Definitions

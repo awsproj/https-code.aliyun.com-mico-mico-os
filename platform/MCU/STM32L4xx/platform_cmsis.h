@@ -14,8 +14,8 @@
 
 #pragma once
 
-#include "mx1101.h"
-#include "core_cm3.h"             /* Cortex-M4 processor and core peripherals */
+#include "stm32l4xx.h"
+#include "core_cm4.h"             /* Cortex-M4 processor and core peripherals */
 
 #ifdef __cplusplus
 extern "C"

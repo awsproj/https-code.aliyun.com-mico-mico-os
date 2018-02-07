@@ -47,14 +47,6 @@
 /******************************************************
 *               Function Declarations
 ******************************************************/
-#ifndef MICO_DISABLE_MCU_POWERSAVE
-static unsigned long  stop_mode_power_down_hook( unsigned long sleep_ms );
-#else
-static unsigned long  idle_power_down_hook( unsigned long sleep_ms );
-#endif
-
-#define ENABLE_INTERRUPTS   __asm("CPSIE i")  /**< Enable interrupts to start task switching in MICO RTOS. */
-#define DISABLE_INTERRUPTS  __asm("CPSID i")  /**< Disable interrupts to stop task switching in MICO RTOS. */
 
 /******************************************************
 *               Variables Definitions
@@ -66,26 +58,21 @@ static unsigned long  idle_power_down_hook( unsigned long sleep_ms );
 
 OSStatus platform_mcu_powersave_init(void)
 {
-  return kNoErr;
+  platform_log("unimplemented");
+  return kUnsupportedErr;
 }
 
 OSStatus platform_mcu_powersave_disable( void )
 {
-  return kNoErr;
+  platform_log("unimplemented");
+  return kUnsupportedErr;
 }
 
 OSStatus platform_mcu_powersave_enable( void )
 {
-  return kNoErr;
+  platform_log("unimplemented");
+  return kUnsupportedErr;
 }
-
-void platform_mcu_powersave_exit_notify( void )
-{
-}
-
-/******************************************************
- *               RTOS Powersave Hooks
- ******************************************************/
 
 void platform_idle_hook( void )
 {
@@ -96,59 +83,3 @@ uint32_t platform_power_down_hook( uint32_t sleep_ms )
 {
   return 0;
 }
-
-#ifdef MICO_DISABLE_MCU_POWERSAVE
-/* MCU Powersave is disabled */
-static unsigned long idle_power_down_hook( unsigned long sleep_ms  )
-{
-    UNUSED_PARAMETER( sleep_ms );
-    ENABLE_INTERRUPTS;;
-    __asm("wfi");
-    return 0;
-}
-#else
-static unsigned long stop_mode_power_down_hook( unsigned long sleep_ms )
-{
-    UNUSED_PARAMETER( sleep_ms );
-    ENABLE_INTERRUPTS;;
-    __asm("wfi");
-    return 0;
-}
-#endif /* MICO_DISABLE_MCU_POWERSAVE */
-
-
-#define USE_DEEPSLEEP_MODE
-
-extern uint32_t RtcGetRefCnt(void);
-extern void RtcSetAlarmCnt(uint32_t AlarmCnt);
-
-void platform_mcu_enter_standby(uint32_t secondsToWakeup)
-{
-  SysGetWakeUpFlag();             //get wake up flag, DO NOT remove this!!
-
-  SysClrWakeUpSrc(WAKEUP_SRC_PD_POWERKEY);
-
-  SysClrWakeUpSrc(WAKEUP_SRC_PD_RTC);
-  
-  SysPowerKeyInit(POWERKEY_MODE_SLIDE_SWITCH, 300); 
-
-  if(secondsToWakeup != MICO_WAIT_FOREVER){
-    RtcSetAlarmCnt( RtcGetRefCnt()+secondsToWakeup );
-  }
-
-#ifdef USE_DEEPSLEEP_MODE
-  SysSetWakeUpSrcInDeepSleep(WAKEUP_SRC_SLEEP_RTC, WAKEUP_POLAR_POWERKEY_LOW, 1);
-  SysGotoDeepSleep();
-#else
-  SysSetWakeUpSrcInPowerDown(WAKEUP_SRC_PD_RTC);
-  SysGotoPowerDown();
-#endif
-  
-  
-
-}
-
-/******************************************************
- *         IRQ Handlers Definition & Mapping
- ******************************************************/
-

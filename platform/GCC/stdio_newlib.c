@@ -115,7 +115,7 @@ int _read( int file, char *ptr, int len )
  * Returns -1 on error or number of bytes sent
  */
 
-int _write( int file, char *ptr, int len )
+int x_write( int file, char *ptr, int len )
 {
 	char channel;
     switch ( file )

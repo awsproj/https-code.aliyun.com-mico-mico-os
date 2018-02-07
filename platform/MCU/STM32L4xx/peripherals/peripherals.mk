@@ -4,7 +4,6 @@ $(NAME)_SOURCES := \
 platform_gpio.c \
 platform_mcu_powersave.c \
 platform_rng.c \
-platform_spi_slave.c \
 platform_adc.c \
 platform_i2c.c \
 platform_rtc.c \
