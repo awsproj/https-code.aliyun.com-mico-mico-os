@@ -91,11 +91,8 @@ int pre_main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_USART1_UART_Init();
 
   /* USER CODE BEGIN 2 */
-  printf("STM32L431RC MiCO, built at "__DATE__" "__TIME__"\r\n");
-
   main();
   /* USER CODE END 2 */
 
@@ -231,7 +228,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-int _write( int file, char *ptr, int len )
+int x_write( int file, char *ptr, int len )
 {
   uint32_t i;
   for(i = 0; i < len; i++)

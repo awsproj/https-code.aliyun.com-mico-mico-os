@@ -58,19 +58,16 @@
 
 OSStatus platform_mcu_powersave_init(void)
 {
-  platform_log("unimplemented");
   return kUnsupportedErr;
 }
 
 OSStatus platform_mcu_powersave_disable( void )
 {
-  platform_log("unimplemented");
   return kUnsupportedErr;
 }
 
 OSStatus platform_mcu_powersave_enable( void )
 {
-  platform_log("unimplemented");
   return kUnsupportedErr;
 }
 

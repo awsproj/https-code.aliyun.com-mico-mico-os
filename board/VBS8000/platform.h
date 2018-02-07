@@ -131,8 +131,7 @@ typedef enum
 
 typedef enum
 {
-    MICO_UART_DEBUG,
-    MICO_UART_DATA,
+    MICO_UART_1,
     MICO_UART_MAX, /* Denotes the total number of UART port aliases. Not a valid UART alias */
     MICO_UART_NONE,
 } mico_uart_t;
@@ -164,16 +163,16 @@ typedef enum
 
 
 #ifdef BOOTLOADER
-#define STDIO_UART       MICO_UART_DATA
+#define STDIO_UART       MICO_UART_1
 #define STDIO_UART_BAUDRATE (115200) 
 #else
-#define STDIO_UART       MICO_UART_DEBUG    /**>Should nerver changed this */
+#define STDIO_UART       MICO_UART_1    /**>Should nerver changed this */
 #define STDIO_UART_BAUDRATE (115200) 
 #endif
 
-#define UART_FOR_APP     MICO_UART_DATA
-#define MFG_TEST         MICO_UART_DEBUG    /**>Should nerver changed this */
-#define CLI_UART         MICO_UART_DEBUG
+#define UART_FOR_APP     MICO_UART_1
+#define MFG_TEST         MICO_UART_1    /**>Should nerver changed this */
+#define CLI_UART         MICO_UART_1
 
 /* Components connected to external I/Os*/
 #define USE_MICO_SPI_FLASH

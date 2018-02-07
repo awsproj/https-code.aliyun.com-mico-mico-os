@@ -61,7 +61,8 @@ typedef enum
 
 typedef struct
 {
-    uint8_t unimplemented;
+    GPIO_TypeDef *GPIOx;
+    uint32_t GPIO_Pin;
 } platform_gpio_t;
 
 typedef struct
@@ -107,22 +108,18 @@ typedef void (* wakeup_irq_handler_t)(void *arg);
 
 typedef struct
 {
-    uint32_t  port_id;
+    USART_TypeDef            *Instance;
 } platform_uart_t;
 
 typedef struct
 {
-    uint8_t                    id;
-    ring_buffer_t*             rx_ring_buffer;
+    UART_HandleTypeDef         huart;
+    ring_buffer_t*             rx_buffer;
     mico_semaphore_t           rx_complete;
     mico_semaphore_t           tx_complete;
     mico_mutex_t               tx_mutex;
-    mico_semaphore_t           sem_wakeup;
-    volatile uint32_t          tx_size;
     volatile uint32_t          rx_size;
-    volatile OSStatus          last_receive_result;
-    volatile OSStatus          last_transmit_result;
-    platform_uart_driver_flow_control_t   flow_control;
+    mico_bool_t         initialized;
 } platform_uart_driver_t;
 
 

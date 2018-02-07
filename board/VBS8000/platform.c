@@ -74,7 +74,11 @@ extern WEAK void PlatformEasyLinkButtonLongPressedCallback(void);
 *               Variables Definitions
 ******************************************************/
 
-const platform_gpio_t *platform_gpio_pins = NULL;
+const platform_gpio_t platform_gpio_pins[] = 
+{
+  [MICO_GPIO_1] = { GPIOB, GPIO_PIN_6 },
+  [MICO_GPIO_2] = { GPIOB, GPIO_PIN_7 },
+};
 
 const platform_adc_t *platform_adc_peripherals = NULL;
 
@@ -86,9 +90,12 @@ platform_spi_driver_t *platform_spi_drivers = NULL;
 
 const platform_spi_slave_driver_t *platform_spi_slave_drivers = NULL;
 
-const platform_uart_t *platform_uart_peripherals = NULL;
+platform_uart_t platform_uart_peripherals[] =
+{
+  [MICO_UART_1] = { USART1 },
+};
 
-platform_uart_driver_t *platform_uart_drivers = NULL;
+platform_uart_driver_t platform_uart_drivers[MICO_UART_MAX];
 
 const platform_i2c_t *platform_i2c_peripherals = NULL;
 

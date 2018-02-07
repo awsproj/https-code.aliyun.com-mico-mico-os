@@ -36,6 +36,9 @@
 #include "stm32l4xx_it.h"
 
 /* USER CODE BEGIN 0 */
+#include "mico_platform.h"
+
+extern platform_uart_driver_t platform_uart_drivers[];
 
 /* USER CODE END 0 */
 
@@ -106,7 +109,7 @@ void USART1_IRQHandler(void)
   /* USER CODE BEGIN USART1_IRQn 0 */
 
   /* USER CODE END USART1_IRQn 0 */
-  HAL_UART_IRQHandler(&huart1);
+  HAL_UART_IRQHandler(&platform_uart_drivers[MICO_UART_1].huart);
   /* USER CODE BEGIN USART1_IRQn 1 */
 
   /* USER CODE END USART1_IRQn 1 */
