@@ -74,10 +74,9 @@ extern WEAK void PlatformEasyLinkButtonLongPressedCallback(void);
 *               Variables Definitions
 ******************************************************/
 
-const platform_gpio_t platform_gpio_pins[] = 
+platform_gpio_t platform_gpio_pins[] = 
 {
-  [MICO_GPIO_1] = { GPIOB, GPIO_PIN_6 },
-  [MICO_GPIO_2] = { GPIOB, GPIO_PIN_7 },
+  [MICO_GPIO_1] = { .GPIOx = GPIOC, .GPIO_Pin = { .Pin = GPIO_PIN_13 } },
 };
 
 const platform_adc_t *platform_adc_peripherals = NULL;
@@ -100,12 +99,62 @@ platform_uart_driver_t platform_uart_drivers[MICO_UART_MAX];
 const platform_i2c_t *platform_i2c_peripherals = NULL;
 
 /* Flash memory devices */
-const platform_flash_t *platform_flash_peripherals = NULL;
+const platform_flash_t platform_flash_peripherals[] =
+{
+  [MICO_FLASH_EMBEDDED] =
+  {
+    .flash_type                   = FLASH_TYPE_EMBEDDED,
+    .flash_start_addr             = 0x08000000,
+    .flash_length                 = 0x40000,
+  },
+};
 
-platform_flash_driver_t *platform_flash_drivers = NULL;
+platform_flash_driver_t platform_flash_drivers[MICO_FLASH_MAX];
 
 /* Logic partition on flash devices */
-const mico_logic_partition_t *mico_partitions = NULL;
+const mico_logic_partition_t mico_partitions[] =
+{
+  [MICO_PARTITION_BOOTLOADER] =
+  {
+    .partition_owner           = MICO_FLASH_EMBEDDED,
+    .partition_description     = "Bootloader",
+    .partition_start_addr      = 0x08000000,
+    .partition_length          = 0x5000,    //20k bytes
+    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_DIS,
+  },
+  [MICO_PARTITION_APPLICATION] =
+  {
+    .partition_owner           = MICO_FLASH_EMBEDDED,
+    .partition_description     = "Application",
+    .partition_start_addr      = 0x08000000 + 0x5000,
+    .partition_length          = 0x1B800,   //110k bytes
+    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_DIS,
+  },
+  [MICO_PARTITION_OTA_TEMP] =
+  {
+    .partition_owner           = MICO_FLASH_EMBEDDED,
+    .partition_description     = "OTA Storage",
+    .partition_start_addr      = 0x08000000 + 0x20800,
+    .partition_length          = 0x1B800, //608k bytes
+    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+  },
+  [MICO_PARTITION_PARAMETER_1] =
+  {
+    .partition_owner           = MICO_FLASH_EMBEDDED,
+    .partition_description     = "PARAMETER1",
+    .partition_start_addr      = 0x08000000 + 0x3C000,
+    .partition_length          = 0x2000, // 8k bytes
+    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+  },
+  [MICO_PARTITION_PARAMETER_2] =
+  {
+    .partition_owner           = MICO_FLASH_EMBEDDED,
+    .partition_description     = "PARAMETER1",
+    .partition_start_addr      = 0x08000000 + 0x3E000,
+    .partition_length          = 0x2000, //8k bytes
+    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+  },
+};
 
 
 

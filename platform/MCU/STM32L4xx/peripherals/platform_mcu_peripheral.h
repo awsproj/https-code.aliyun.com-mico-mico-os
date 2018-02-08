@@ -62,7 +62,7 @@ typedef enum
 typedef struct
 {
     GPIO_TypeDef *GPIOx;
-    uint32_t GPIO_Pin;
+    GPIO_InitTypeDef GPIO_Pin;
 } platform_gpio_t;
 
 typedef struct

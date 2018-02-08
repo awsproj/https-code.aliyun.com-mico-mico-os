@@ -127,6 +127,10 @@ void platform_mcu_reset( void )
 */
 void init_clocks( void )
 {
+  /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 }
 
 WEAK void init_memory( void )
@@ -149,6 +153,7 @@ void init_architecture( void )
 
 void mico_main(void)
 {
+  init_clocks();
   init_architecture();
 }
 
