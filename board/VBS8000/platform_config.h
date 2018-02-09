@@ -78,7 +78,7 @@ extern "C"
 
 /************************************************************************
  * How many bits are used in NVIC priority configuration */
-#define CORTEX_NVIC_PRIO_BITS   (3)
+#define CORTEX_NVIC_PRIO_BITS   (4)
 
 /************************************************************************
  * MICO_ENABLE_STDIO_TO_BOOT = 1 */
