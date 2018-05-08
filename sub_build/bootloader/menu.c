@@ -390,8 +390,23 @@ void Main_Menu(void)
       MicoSystemReboot();
       break;                              
     }
-    
-    else if(strcmp(cmdname, "HELP") == 0 || strcmp(cmdname, "?") == 0)	{
+
+    else if (strcmp(cmdname, "NVRAM") == 0 || strcmp(cmdname, "9") == 0) {
+      partition = MicoFlashGetInfo(MICO_PARTITION_PARAMETER_1);
+      if (findCommandPara(cmdbuf, "r", NULL, 0) != -1)
+      {
+        printf("\n\rRead nvram...\n\r");
+        SerialUpload(partition->partition_owner, partition->partition_start_addr, "nvram.bin", partition->partition_length);
+        continue;
+      }
+      printf("\n\rUpdating nvram...\n\r");
+      err = MicoFlashDisableSecurity(MICO_PARTITION_PARAMETER_1, 0x0, partition->partition_length);
+      require_noerr(err, exit);
+      SerialDownload(partition->partition_owner, partition->partition_start_addr, partition->partition_length);
+    }
+
+      else if (strcmp(cmdname, "HELP") == 0 || strcmp(cmdname, "?") == 0)
+      {
         printf ( menu, MODEL, Bootloader_REVISION, HARDWARE_REVISION );  /* display command menu        */
       break;
     }

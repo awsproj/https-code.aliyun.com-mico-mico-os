@@ -56,28 +56,29 @@ char menu[] =
 "7:REBOOT";
 #else
 char menu[] =
-"\r\n"
-"MICO bootloader for %s, %s, HARDWARE_REVISION: %s\r\n"
-"+ command -------------------------+ function ------------+\r\n"
-"| 0:BOOTUPDATE    <-r>             | Update bootloader    |\r\n"
-"| 1:FWUPDATE      <-r>             | Update application   |\r\n"
-"| 2:DRIVERUPDATE  <-r>             | Update RF driver     |\r\n"
-"| 3:PARUPDATE     <-id n><-r><-e>  | Update MICO partition|\r\n"
-"| 4:FLASHUPDATE   <-dev device>    |                      |\r\n"
-"|  <-e><-r><-start addr><-end addr>| Update flash content |\r\n"
-"| 5:MEMORYMAP                      | List flash memory map|\r\n"
-"| 6:BOOT                           | Excute application   |\r\n"
-"| 7:REBOOT                         | Reboot               |\r\n"
+    "\r\n"
+    "MICO bootloader for %s, %s, HARDWARE_REVISION: %s\r\n"
+    "+ command -------------------------+ function ------------+\r\n"
+    "| 0:BOOTUPDATE    <-r>             | Update bootloader    |\r\n"
+    "| 1:FWUPDATE      <-r>             | Update application   |\r\n"
+    "| 2:DRIVERUPDATE  <-r>             | Update RF driver     |\r\n"
+    "| 3:PARUPDATE     <-id n><-r><-e>  | Update MICO partition|\r\n"
+    "| 4:FLASHUPDATE   <-dev device>    |                      |\r\n"
+    "|  <-e><-r><-start addr><-end addr>| Update flash content |\r\n"
+    "| 5:MEMORYMAP                      | List flash memory map|\r\n"
+    "| 6:BOOT                           | Excute application   |\r\n"
+    "| 7:REBOOT                         | Reboot               |\r\n"
 #ifdef MICO_USE_BT_PARTITION
-"| 8:BT DRIVERUPDATE  <-r>          | Update BT driver     |\r\n"
+    "| 8:BT DRIVERUPDATE  <-r>          | Update BT driver     |\r\n"
 #endif
-"+----------------------------------+----------------------+\r\n"
-"|    (C) COPYRIGHT 2015 MXCHIP Corporation  By William Xu |\r\n"
-" Notes:\r\n"
-" -e Erase only  -r Read from flash -dev flash device number\r\n"
-"  -start flash start address -end flash start address\r\n"
-" Example: Input \"4 -dev 0 -start 0x400 -end 0x800\": Update \r\n"
-"          flash device 0 from 0x400 to 0x800\r\n";
+    "| 9:NVRAM  <-r>                    | Update nvram         |\r\n"
+    "+----------------------------------+----------------------+\r\n"
+    "|    (C) COPYRIGHT 2015 MXCHIP Corporation  By William Xu |\r\n"
+    " Notes:\r\n"
+    " -e Erase only  -r Read from flash -dev flash device number\r\n"
+    "  -start flash start address -end flash start address\r\n"
+    " Example: Input \"4 -dev 0 -start 0x400 -end 0x800\": Update \r\n"
+    "          flash device 0 from 0x400 to 0x800\r\n";
 #endif
 
 #ifdef MICO_ENABLE_STDIO_TO_BOOT
