@@ -92,12 +92,6 @@ void _start_init( void )
     init_clocks();
     init_memory();
 
-    /* Copy initial values for global variables into RAM  */
-    if ( ( &link_global_data_start != &link_global_data_initial_values ) && ( link_global_data_size != 0 ) )
-    {
-        memcpy( &link_global_data_start, &link_global_data_initial_values, (size_t) link_global_data_size );
-    }
-
     /* BSS segment is for zero initialised elements, so memset it to zero */
     memset( &link_bss_location, 0, (size_t) link_bss_size );
 
@@ -112,7 +106,6 @@ void _start_init( void )
 
     /* TODO: make this an unconditional goto?, so that return address stuff doesn't get put on the stack. (what happens if main returns in this case?) */
     init_architecture();
-    init_platform();
 
     for ( ctor_num = 0; ctor_num < link_constructors_size/sizeof(constructor_ptr_t); ctor_num++ )
     {

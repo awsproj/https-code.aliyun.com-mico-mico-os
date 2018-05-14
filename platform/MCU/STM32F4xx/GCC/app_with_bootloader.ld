@@ -23,7 +23,7 @@ SECTIONS
         link_interrupt_vectors_location = .;
         KEEP(*(*.interrupt_vector_table))
         KEEP(*(.stub_section))
-    }>APP_FLASH  AT> APP_FLASH
+    }>SRAM  AT> SRAM
 
     .text :
     {
@@ -62,7 +62,7 @@ SECTIONS
 
         . = ALIGN(16);
 
-    }>APP_FLASH  AT> APP_FLASH
+    }>SRAM  AT> SRAM
 
     /*
      * The .ARM.exidx and .ARM.extab sections are used for C++ exception handling.
@@ -75,14 +75,14 @@ SECTIONS
         __exidx_start = ALIGN(4);
         *(.ARM.exidx* .gnu.linkonce.armexidx.*)
         __exidx_end = .;
-    } > APP_FLASH  AT> APP_FLASH
+    } > SRAM  AT> SRAM
 
     .ARM.extab :
     {
         __extab_start = ALIGN(4);
         *(.ARM.extab*)
         __extab_end = .;
-    } > APP_FLASH  AT> APP_FLASH
+    } > SRAM  AT> SRAM
 
     .fast : /* This section contains code that is run from RAM after being loaded from flash - functions can be put in this section with the C attribute: __attribute__ ((section (".fast"))) */
     {
@@ -90,7 +90,7 @@ SECTIONS
         link_run_from_ram_code_ram_location = .;
         *(.fast .fast.* .text.fastcode)
         link_run_from_ram_code_ram_end = .;
-    }> SRAM AT> APP_FLASH
+    }> SRAM AT> SRAM
 
     .data : /* Contains the non-zero initialised global variables */
     {
@@ -99,7 +99,7 @@ SECTIONS
         *(.data*)
         link_global_data_end = .;
         . = ALIGN(., 4);
-    }> SRAM AT> APP_FLASH
+    }> SRAM AT> SRAM
 
 
     .bss : /* Zero initialised memory used for zero initialised variables */

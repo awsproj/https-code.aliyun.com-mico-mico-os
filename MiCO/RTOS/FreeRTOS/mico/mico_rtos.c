@@ -168,6 +168,8 @@ WEAK void mico_main(void)
 
 }
 
+uint8_t volatile mac[6];
+
 static void application_thread_main( void *arg )
 {
     UNUSED_PARAMETER( arg );
@@ -175,11 +177,12 @@ static void application_thread_main( void *arg )
     /* Initialize after rtos is in initialized */
     mico_main();
     mico_rtos_init();
-
-    if ( MicoShouldEnterMFGMode( ) )
-        mico_system_qc_test( );
-    else
-        application_start( );
+    
+    wiced_management_init();
+    wiced_wifi_get_mac_address( &mac );
+    printf("MAC: %02x%02x%02x%02x%02x%02x\r\n",
+    mac[0], mac[1], mac[2], 
+    mac[3], mac[4], mac[5]);
 
     vTaskDelete( NULL );
 }
