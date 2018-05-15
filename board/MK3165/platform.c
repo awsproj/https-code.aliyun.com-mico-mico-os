@@ -306,7 +306,23 @@ const mico_logic_partition_t mico_partitions[] =
     .partition_start_addr      = 0x100000,
     .partition_length          = 0x100000, //1M bytes
     .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
-  }
+  },
+  [MICO_PARTITION_EXTERNAL_FLASH_ALL] =
+  {
+    .partition_owner           = MICO_FLASH_SPI,
+    .partition_description     = "External flash all",
+    .partition_start_addr      = 0x0,
+    .partition_length          = 0x200000, //2M bytes
+    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+  },
+  [MICO_PARTITION_INTERNAL_FLASH_ALL] =
+  {
+    .partition_owner           = MICO_FLASH_EMBEDDED,
+    .partition_description     = "Internal flash all",
+    .partition_start_addr      = 0x08000000,
+    .partition_length          = 0x80000, //512K bytes
+    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+  },
 };
 
 
