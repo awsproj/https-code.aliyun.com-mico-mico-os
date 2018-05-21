@@ -54,7 +54,7 @@ extern "C"
 
   /************************************************************************
  * Uncomment to disable watchdog. For debugging only */
-//#define MICO_DISABLE_WATCHDOG
+#define MICO_DISABLE_WATCHDOG
 
 /************************************************************************
  * Uncomment to disable standard IO, i.e. printf(), etc. */
@@ -62,11 +62,11 @@ extern "C"
 
 /************************************************************************
  * Uncomment to disable MCU powersave API functions */
-//#define MICO_DISABLE_MCU_POWERSAVE
+#define MICO_DISABLE_MCU_POWERSAVE
 
 /************************************************************************
  * Uncomment to enable MCU real time clock */
-#define MICO_ENABLE_MCU_RTC
+// #define MICO_ENABLE_MCU_RTC
 
 /************************************************************************
  * Restore default and start easylink after press down EasyLink button for 3 seconds. */
