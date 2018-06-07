@@ -386,6 +386,7 @@ typedef struct mico_api_struct
     OSStatus (*MicoUartRecv)( mico_uart_t uart, void* data, uint32_t size, uint32_t timeout );
     uint32_t (*MicoUartGetLengthInBuffer)( mico_uart_t uart );
     void (*MicoUartPinRedirect)( mico_uart_t uart );
+    void (*MicoUartDmaEnable)(mico_uart_t uart, bool enable);
 
     /* Power management*/
     int (*pm_mcu_state)( power_state_t state, uint32_t time_dur );

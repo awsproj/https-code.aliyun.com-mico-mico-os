@@ -215,6 +215,10 @@ uint32_t MicoUartGetLengthInBuffer( mico_uart_t uart )
 {
 	return lib_api_p->MicoUartGetLengthInBuffer(uart);
 }
+void MicoUartDmaEnable(mico_uart_t uart, bool enable)
+{
+	lib_api_p->MicoUartDmaEnable(uart, enable);
+}
 
 void wifistate_Command(char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv)
 {

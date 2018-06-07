@@ -246,6 +246,7 @@ typedef struct {
 	uint32_t (*MicoUartGetLengthInBuffer)( mico_uart_t uart ); 
 	void     (*MicoUartPinRedirect)(mico_uart_t uart);
     int (*disable_log_uart)(void);
+	void (*MicoUartDmaEnable)(mico_uart_t uart, bool enable);
 } uart_api_t;
 
 typedef void (*rtc_irq_handler)(void);
