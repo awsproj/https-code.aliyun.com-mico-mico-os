@@ -49,8 +49,6 @@ enum {
     MICO_GPIO_NONE,
 };
 
-
-
 enum
 {
     MICO_SPI_1,
@@ -108,6 +106,9 @@ enum
   MICO_PARTITION_USER_MAX
 };
 
+//add by li
+#define MICO_STDIO_UART             (MICO_UART_1)
+//
 
 #define UART_FOR_APP     MICO_UART_1
 #define MICO_MFG_TEST         MICO_UART_1

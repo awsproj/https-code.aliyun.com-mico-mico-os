@@ -34,7 +34,7 @@ EXTRA_TARGET_MAKEFILES +=  $(ALIOS_PATH)/platform/mcu/$(HOST_MCU_FAMILY)/pick.mk
 
 # Run in mico configurations
 ALIOS_SUPPORT := y
-ALIOS_DEVICES := GPIO WLAN
+ALIOS_DEVICES := GPIO WLAN UART
 $(NAME)_SOURCES += mico_board.c
 
 

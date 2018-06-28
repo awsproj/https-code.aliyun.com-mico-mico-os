@@ -66,20 +66,20 @@
 
 const platform_gpio_t platform_gpio_pins[] =
 {
-    [MICO_GPIO_4]  = {12},
-    [MICO_GPIO_22] = {18},
-    [MICO_GPIO_23] = {17},
-    [MICO_GPIO_20] = {11},
-    [MICO_GPIO_21] = {21},
-    [MICO_GPIO_31] = { 0}, //??
-    [MICO_GPIO_0]  = { 7},
-    [MICO_GPIO_1]  = { 8},
-    [MICO_GPIO_15] = { 6},
-    [MICO_GPIO_17] = { 3},
-    [MICO_GPIO_16] = { 4},
-    [MICO_GPIO_14] = { 5},
-    [MICO_GPIO_30] = { 1},
-    [MICO_GPIO_29] = { 2},
+    [MICO_GPIO_4] = { 4 },
+    [MICO_GPIO_22] = { 22 },
+    [MICO_GPIO_23] = { 23 },
+    [MICO_GPIO_20] = { 20 },
+    [MICO_GPIO_21] = { 21 },
+    [MICO_GPIO_31] = { 0 },
+    [MICO_GPIO_0] = { 0 },
+    [MICO_GPIO_1] = { 1 },
+    [MICO_GPIO_15] = { 15 },
+    [MICO_GPIO_17] = { 17 },
+    [MICO_GPIO_16] = { 16 },
+    [MICO_GPIO_14] = { 14 },
+    [MICO_GPIO_30] = { 30 },
+    [MICO_GPIO_29] = { 29 },
 };
 
 #if 0
@@ -101,11 +101,6 @@ const platform_i2c_t platform_i2c_peripherals[] =
 platform_i2c_driver_t platform_i2c_drivers[MICO_I2C_MAX];
 #endif
 
-const platform_uart_t platform_uart_peripherals[] = 
-{
-    [MICO_UART_1] = {0},
-    [MICO_UART_2] = {1},
-};
 #if 0
 platform_uart_driver_t platform_uart_drivers[MICO_UART_MAX];
 

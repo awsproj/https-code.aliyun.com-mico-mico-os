@@ -116,8 +116,8 @@ enum
 
 enum
 {
-	MICO_UART_1,
-    MICO_UART_2,
+	MICO_UART_1, /* UART1 */
+    MICO_UART_2, /* UART2 */
     MICO_UART_MAX, /* Denotes the total number of UART port aliases. Not a valid UART alias */
     MICO_UART_NONE,
 };

@@ -64,22 +64,22 @@
 *               Variables Definitions
 ******************************************************/
 
-const platform_gpio_t platform_gpio_pins[] =
-{
-    [MICO_GPIO_1]  = { 0},
-    [MICO_GPIO_2]  = { 1},
-    [MICO_GPIO_7]  = { 2},
-    [MICO_GPIO_8]  = { 3},
-    [MICO_GPIO_9]  = { 4},
-    [MICO_GPIO_10] = { 5},
-    [MICO_GPIO_12] = { 6},
-    [MICO_GPIO_13] = { 7},
-    [MICO_GPIO_14] = { 8},
-    [MICO_GPIO_19] = { 9},
-    [MICO_GPIO_21] = {10},
-    [MICO_GPIO_22] = {11},
-    [MICO_GPIO_23] = {12},
-};
+//const platform_gpio_t platform_gpio_pins[] =
+//{
+//    [MICO_GPIO_1]  = { 0},
+//    [MICO_GPIO_2]  = { 1},
+//    [MICO_GPIO_7]  = { 2},
+//    [MICO_GPIO_8]  = { 3},
+//    [MICO_GPIO_9]  = { 4},
+//    [MICO_GPIO_10] = { 5},
+//    [MICO_GPIO_12] = { 6},
+//    [MICO_GPIO_13] = { 7},
+//    [MICO_GPIO_14] = { 8},
+//    [MICO_GPIO_19] = { 9},
+//    [MICO_GPIO_21] = {10},
+//    [MICO_GPIO_22] = {11},
+//    [MICO_GPIO_23] = {12},
+//};
 
 #if 0
 const platform_pwm_t *platform_pwm_peripherals = NULL;
