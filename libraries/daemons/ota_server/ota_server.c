@@ -255,6 +255,12 @@ static void ota_server_thread( mico_thread_arg_t arg )
     ota_server_log("OTA server address: %s, host ip: %s", ota_server_context->download_url.host, ota_server_context->download_url.ip);
 
     offset = 0;
+#ifdef MICO_SYSTEM_MONITOR_ENABLE
+#if defined (CONFIG_CPU_MX1290) || defined (CONFIG_MX108)
+    MicoWdgInitialize(20000);
+    MicoWdgReload();
+#endif
+#endif
     MicoFlashErase( MICO_PARTITION_OTA_TEMP, 0x0, ota_partition->partition_length );
     
     CRC16_Init( &crc_context );
