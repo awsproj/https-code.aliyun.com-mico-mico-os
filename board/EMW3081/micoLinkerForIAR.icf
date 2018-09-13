@@ -159,7 +159,6 @@ define block CPP_INIT with fixed order {        block SHT$$PREINIT_ARRAY,
                                                 block SHT$$INIT_ARRAY };
 
 define block .ram_image2.text with fixed order{ section .infra.ram.start*,
-                                                section .rodata*,
                                                 block CPP_INIT,
                                                 section .mon.ram.text*, 
                                                 section .hal.flash.text*,
@@ -213,7 +212,8 @@ define block SDRAM with fixed order{ section .sdram.text*,
                                      section .text object ge_*,
                                      section .text object sc_*,
                                      section .text object auth_poly1305_donna.o,
-                                     section .text object sc_muladd.o
+                                     section .text object sc_muladd.o,
+                                     section .rodata*,
                                    };
 place at start of SDRAM_RAM_region { readwrite, 
                                      block SDRAM, 
