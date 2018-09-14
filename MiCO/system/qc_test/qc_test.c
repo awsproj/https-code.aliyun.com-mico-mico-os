@@ -90,6 +90,47 @@ static uint8_t* _qc_test_uart_init( void )
     return pbuffer;
 }
 
+static void qc_printf(const char *fmt, ...)
+{
+    va_list ap;
+    char string[128];
+
+    va_start(ap, fmt);
+    vsprintf(string, fmt, ap);
+    string[127] = 0;
+    MicoUartSend(MFG_TEST, string, strlen(string));
+    va_end(ap);
+}
+
+
+static void qc_show_ilop(void)
+{
+#define PRODUCT_KEY_MAXLEN (20)
+#define DEVICE_NAME_MAXLEN (32)
+#define DEVICE_SECRET_MAXLEN (64)
+
+    char pk[PRODUCT_KEY_MAXLEN + 1] = {0};
+    char ps[DEVICE_SECRET_MAXLEN + 1] = {0};
+    char dn[DEVICE_NAME_MAXLEN + 1] = {0};
+    char ds[DEVICE_SECRET_MAXLEN + 1] = {0};
+
+    HAL_GetProductKey(pk);
+    HAL_GetDeviceName(dn);
+    HAL_GetDeviceSecret(ds);
+    HAL_GetProductSecret(ps);
+
+    if (!strlen(pk))
+        return;
+
+    qc_printf("  ILOP: %s,%s,%s,%s\r\n", pk, ps, ds, dn);
+}
+
+static void qc_id(void)
+{
+    qc_printf("ID List: \r\n");
+    qc_show_ilop();
+}
+
 /* Calculate Application firmware's CRC */
 static void _qc_test_calculate_app_crc( char *str, int len )
 {
@@ -136,13 +177,13 @@ static void _qc_test_thread( mico_thread_arg_t arg )
     require( rx_data, exit );
 
     mf_printf( "==== MXCHIP Manufacture Test ====\r\n" );
-    QC_TEST_PRINT_STRING( "Serial Number:", SERIAL_NUMBER );
-    QC_TEST_PRINT_STRING_FUN( "App CRC:", _qc_test_calculate_app_crc );
-    QC_TEST_PRINT_STRING( "Bootloader Version:", mico_get_bootloader_ver( ) );
-    QC_TEST_PRINT_STRING( "Library Version:", MicoGetVer() );
-    QC_TEST_PRINT_STRING_FUN( "APP Version:", mico_app_info );
+    QC_TEST_PRINT_STRING( "Serial Number: ", SERIAL_NUMBER );
+    QC_TEST_PRINT_STRING( "Bootloader Version: ", mico_get_bootloader_ver( ) );
+    QC_TEST_PRINT_STRING( "Library Version: ", MicoGetVer() );
+    QC_TEST_PRINT_STRING_FUN( "APP Version: ", mico_app_info );
+    QC_TEST_PRINT_STRING_FUN( "App CRC: ", _qc_test_calculate_app_crc );
 #ifndef PPP_IF
-    QC_TEST_PRINT_STRING_FUN( "Driver:", wlan_driver_version );
+    // QC_TEST_PRINT_STRING_FUN( "Driver:", wlan_driver_version );
 #endif
 
 #ifdef QC_TEST_GPIO_ENABLE
@@ -158,6 +199,7 @@ static void _qc_test_thread( mico_thread_arg_t arg )
     sprintf( str, "%02X-%02X-%02X-%02X-%02X-%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5] );
     QC_TEST_PRINT_STRING( "MAC:", str );
 
+    qc_id();
     qc_scan( );
 
     qc_test_tcpip( );
