@@ -147,6 +147,7 @@ typedef enum
 typedef enum
 {
   MICO_PARTITION_FILESYS,
+  MICO_PARTITION_PARAMETER_KV,
   MICO_PARTITION_USER_MAX
 } mico_user_partition_t;
 

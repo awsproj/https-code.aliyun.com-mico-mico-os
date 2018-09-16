@@ -21,7 +21,7 @@
 #include "common.h"
 #include "platform_peripheral.h"
 
-#include "portmacro.h"
+//#include "portmacro.h"
 
 /******************************************************
  *                      Macros

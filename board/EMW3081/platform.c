@@ -240,6 +240,14 @@ const mico_logic_partition_t mico_partitions[] =
     .partition_owner           = MICO_FLASH_SPI,
     .partition_description     = "PARAMETER2",
     .partition_start_addr      = 0x1E4000,
+    .partition_length          = 0x1000,    //4k bytes
+    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+  },
+  [MICO_PARTITION_PARAMETER_KV] =
+  {
+    .partition_owner           = MICO_FLASH_SPI,
+    .partition_description     = "PARAMETER2",
+    .partition_start_addr      = 0x1E5000,
     .partition_length          = 0x4000,    //16k bytes
     .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
   },
@@ -292,8 +300,6 @@ void platform_init_peripheral_irq_priorities( void )
 
 void init_platform( void )
 {
-  button_init_t init;
-
   MicoGpioInitialize( (mico_gpio_t)MICO_SYS_LED, OUTPUT_PUSH_PULL );
   MicoGpioOutputLow( (mico_gpio_t)MICO_SYS_LED );
   MicoGpioInitialize( (mico_gpio_t)MICO_RF_LED, OUTPUT_OPEN_DRAIN_NO_PULL );
@@ -301,13 +307,6 @@ void init_platform( void )
   
   MicoGpioInitialize((mico_gpio_t)BOOT_SEL, INPUT_PULL_UP);
   MicoGpioInitialize((mico_gpio_t)MFG_SEL, INPUT_PULL_UP);
-
-  init.gpio = EasyLink_BUTTON;
-  init.pressed_func = PlatformEasyLinkButtonClickedCallback;
-  init.long_pressed_func = PlatformEasyLinkButtonLongPressedCallback;
-  init.long_pressed_timeout = RestoreDefault_TimeOut;
-
-  button_init( IOBUTTON_EASYLINK, init );
 
   /* Initialise RTC */
   platform_rtc_init( );

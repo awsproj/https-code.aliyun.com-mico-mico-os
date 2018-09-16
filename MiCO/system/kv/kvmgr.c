@@ -54,21 +54,21 @@ typedef enum {
 #define KV_SELF_REMOVE          0
 #define KV_ORIG_REMOVE          1
 /* Flash block header description */
-typedef struct _block_header_t {
+typedef __packed struct _block_header_t {
     uint8_t     magic;          /* The magic number of block */
     uint8_t     state;          /* The state of the block */
     uint8_t     reserved[2];
-} __attribute__((packed)) block_hdr_t;
+} block_hdr_t;
 
 /* Key-value item header description */
-typedef struct _item_header_t {
+typedef __packed struct _item_header_t {
     uint8_t     magic;          /* The magic number of key-value item */
     uint8_t     state;          /* The state of key-value item */
     uint8_t     crc;            /* The crc-8 value of key-value item */
     uint8_t     key_len;        /* The length of the key */
     uint16_t    val_len;        /* The length of the value */
     uint16_t    origin_off;     /* The origin key-value item offset, it will be used when updating */
-} __attribute__((packed)) item_hdr_t;
+} item_hdr_t;
 
 /* Key-value item description */
 typedef struct _kv_item_t {
