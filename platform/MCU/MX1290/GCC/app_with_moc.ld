@@ -14,7 +14,7 @@ ENTRY( moc_app_main );
 
 MEMORY
 {
-    APP_FLASH  (rx)  : ORIGIN = 0x08088000, LENGTH = 256K
+    APP_FLASH  (rx)  : ORIGIN = 0x08088000, LENGTH = 428K
     SRAM       (rwx) : ORIGIN = 0x10030000, LENGTH = 60K-16
 }
 

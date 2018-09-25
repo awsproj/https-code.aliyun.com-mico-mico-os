@@ -140,6 +140,7 @@ typedef enum
     MICO_PARTITION_USER_MAX = 0,
     MICO_PARTITION_USER = 7,
     MICO_PARTITION_SDS,
+    MICO_PARTITION_KV,
 } mico_user_partition_t;
 
 typedef struct
