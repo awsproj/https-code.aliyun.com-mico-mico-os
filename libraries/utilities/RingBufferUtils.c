@@ -71,9 +71,12 @@ uint32_t ring_buffer_used_space( ring_buffer_t* ring_buffer )
 OSStatus ring_buffer_get_data( ring_buffer_t* ring_buffer, uint8_t** data, uint32_t* contiguous_bytes )
 {
   uint32_t head_to_end = ring_buffer->size - ring_buffer->head;
+  uint32_t len;
+
+  len = (head_to_end + ring_buffer->tail) % ring_buffer->size;
   
   *data = &ring_buffer->buffer[ring_buffer->head];
-  *contiguous_bytes = MIN(head_to_end, (head_to_end + ring_buffer->tail) % ring_buffer->size);
+  *contiguous_bytes = MIN(head_to_end, len);
   
   return kNoErr;
 }
@@ -87,10 +90,12 @@ OSStatus ring_buffer_consume( ring_buffer_t* ring_buffer, uint32_t bytes_consume
 uint32_t ring_buffer_write( ring_buffer_t* ring_buffer, const uint8_t* data, uint32_t data_length )
 {
   uint32_t tail_to_end = ring_buffer->size-1 - ring_buffer->tail;
-  
+  uint32_t freesize;
   /* Calculate the maximum amount we can copy */
-  uint32_t amount_to_copy = MIN(data_length, (tail_to_end + ring_buffer->head) % ring_buffer->size);
+  uint32_t amount_to_copy;
 
+  freesize = (tail_to_end + ring_buffer->head) % ring_buffer->size;
+  amount_to_copy = MIN(data_length, freesize);
   /* Fix the bug when tail is at the end of buffer */
   tail_to_end++;
   
