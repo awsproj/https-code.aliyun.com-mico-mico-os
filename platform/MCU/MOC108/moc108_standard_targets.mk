@@ -7,7 +7,7 @@
 #  permission of MXCHIP Corporation.
 #
 
-.PHONY: bootloader download_bootloader total download_dct download kill_openocd
+.PHONY: bootloader download_bootloader total download_dct download kill_openocd EXT_IMAGES_DOWNLOAD_DEP
 
 EXTRA_PRE_BUILD_TARGETS  += bootloader
 EXTRA_POST_BUILD_TARGETS += copy_output_for_eclipse
@@ -49,6 +49,30 @@ BOOTLOADER_APP:=0
 BOOTLOADER_SUB_BUILD:=1
 endif #$(total,$(findstring total,$(MAKECMDGOALS)))
 endif #$(findstring bootloader, $(BUILD_STRING))
+
+
+# Target "total" not exist, no need to build bootloader
+ifeq ($(audio),1)
+FILE_BIN_SCRIPT:= $(MAKEFILES_PATH)/scripts/flash_pack.py
+FILE_BIN_NUM:= 001
+FILES_BIN_NAME:= filesystem
+
+# If do not exist resources folder, error
+APP_FILE_RESOURCE := $(APP_FULL)/resources
+ifeq ($(APP_FILE_RESOURCE), $(wildcard $(APP_FILE_RESOURCE)))
+SFLASH_GEN_FTFS_BIN:= build/$(APP_FULL)@$(PLATFORM)/resources/filesystem.bin
+else
+SFLASH_GEN_FTFS_BIN:= 
+
+sflash_gen_filesystem:$(STRIPPED_LINK_OUTPUT_FILE) display_map_summary download_bootloader sflash_write_app kill_openocd
+	$(QUIET)$(ECHO) Generating Filesystem Image...
+	$(QUIET)$(shell $(PYTHON) $(FILE_BIN_SCRIPT) $(FILE_BIN_NUM) $(FILES_BIN_NAME).bin $(APP_FILE_RESOURCE))
+	$(QUIET)$(MV) $(SOURCE_ROOT)$(FILES_BIN_NAME).bin $(SOURCE_ROOT)build/$(CLEANED_BUILD_STRING)/resources
+	$(QUIET)$(ECHO) Finished Generating Filesystem Image
+	$(QUIET)$(ECHO_BLANK_LINE)
+
+endif
+endif
 
 ifeq ($(BOOTLOADER_SUB_BUILD),1)
 bootloader:
@@ -104,11 +128,21 @@ download_app: $(STRIPPED_LINK_OUTPUT_FILE) display_map_summary download_bootload
 	$(QUIET)$(ECHO) Downloading application to partition: $(APPLICATION_FIRMWARE_PARTITION_TCL) size: $(IMAGE_SIZE) bytes... 
 	$(call CONV_SLASHES, $(OPENOCD_FULL_NAME)) -s $(SOURCE_ROOT) -f $(OPENOCD_CFG_PATH)interface/$(JTAG).cfg -f $(OPENOCD_CFG_PATH)$(HOST_OPENOCD)/$(HOST_OPENOCD).cfg -c init -c flash_boot_check -c "flash_program $(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.ota$(BIN_OUTPUT_SUFFIX)) 0x13200" -c shutdown $(DOWNLOAD_LOG) 2>&1 && $(ECHO) Download complete && $(ECHO_BLANK_LINE) || $(ECHO) Download failed. See build/openocd_log.txt for detail.
 
+download_filesys: download_app sflash_gen_filesystem
+	$(eval IMAGE_SIZE := $(shell $(PYTHON) $(IMAGE_SIZE_SCRIPT) $(file_bin_path)))
+	$(QUIET)$(ECHO) Downloading filesystem to partition: $(FILESYSTEM_IMAGE_PARTITION_TCL) size: $(IMAGE_SIZE) bytes... 
+	$(call CONV_SLASHES, $(OPENOCD_FULL_NAME)) -s $(SOURCE_ROOT) -f $(OPENOCD_CFG_PATH)interface/$(JTAG).cfg -f $(OPENOCD_CFG_PATH)$(HOST_OPENOCD)/$(HOST_OPENOCD).cfg -c init -c flash_boot_check -c "flash_program build/$(CLEANED_BUILD_STRING)/resources/filesystem.bin 0x200000" -c shutdown $(DOWNLOAD_LOG) 2>&1 && $(ECHO) Download complete && $(ECHO_BLANK_LINE) || $(ECHO) Download failed. See build/openocd_log.txt for detail.
+
 ifeq (download,$(filter download,$(MAKECMDGOALS)))
+ifeq ($(audio),1)
+EXT_IMAGES_DOWNLOAD_DEP := download_filesys
+file_bin_path := build/$(CLEANED_BUILD_STRING)/resources/filesystem.bin
+else
 EXT_IMAGES_DOWNLOAD_DEP := download_app
 endif
+endif
 
-download: download_app $(if $(findstring total,$(MAKECMDGOALS)), EXT_IMAGE_DOWNLOAD,)
+download: $(EXT_IMAGES_DOWNLOAD_DEP)
 
 kill_openocd:
 	$(KILL_OPENOCD)
