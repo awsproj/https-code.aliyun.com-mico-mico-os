@@ -32,6 +32,37 @@ static mico_worker_thread_t wlan_autoconf_worker_thread;
  *               Variables Definitions
  ******************************************************/
 
+static OSStatus system_config_mode_stop_worker( void *arg )
+{
+    OSStatus err = kNoErr;
+    mico_Context_t* in_context = mico_system_context_get();
+    require( in_context, exit );
+
+    micoWlanPowerOn();
+#if (MICO_WLAN_CONFIG_MODE == CONFIG_MODE_EASYLINK)
+    err = mico_easylink( in_context, MICO_FALSE );
+#elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_SOFTAP)
+    err = mico_easylink_softap( in_context, MICO_FALSE );
+#elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_MONITOR)
+    err = mico_easylink_monitor( in_context, MICO_FALSE );
+#elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_MONITOR_EASYLINK)
+    err = mico_easylink_monitor_with_easylink( in_context, MICO_FALSE );
+#elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_USER)
+    err = mico_easylink_usr( in_context, MICO_FALSE );
+#elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_WAC)
+    err = mico_easylink_wac( in_context, MICO_FALSE );
+#elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_AWS)
+    err = mico_easylink_aws( in_context, MICO_FALSE );
+#elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_NONE)
+#else
+    #error "Wi-Fi configuration mode is not defined"
+#endif
+    require_noerr( err, exit );
+exit:
+    mico_system_delegate_easylink_timeout( in_context );
+    return err;
+}
+
 static OSStatus system_config_mode_worker( void *arg )
 {
     OSStatus err = kNoErr;
@@ -72,6 +103,15 @@ OSStatus mico_system_wlan_start_autoconf( void )
 #endif
 }
 
+OSStatus mico_system_wlan_stop_autoconf( void )
+{
+  /* Enter auto-conf mode only once in reboot mode, use MICO_NETWORKING_WORKER_THREAD to save ram */
+#ifdef  EasyLink_Needs_Reboot
+    return mico_rtos_send_asynchronous_event( MICO_NETWORKING_WORKER_THREAD, system_config_mode_stop_worker, NULL );
+#else
+    return mico_rtos_send_asynchronous_event( &wlan_autoconf_worker_thread, system_config_mode_stop_worker, NULL );
+#endif
+}
 
 OSStatus mico_system_init( mico_Context_t* in_context )
 {
