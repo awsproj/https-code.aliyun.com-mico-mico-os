@@ -3,18 +3,22 @@ EXTRA_POST_BUILD_TARGETS += $(MICO_ALL_BIN_OUTPUT_FILE)
 ifeq ($(HOST_OS),Win32)
 CRC := "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/tools/crc/win/crc.exe"
 XZ 		:= "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/tools/xz/win/xz.exe"
+BK3266CRC := "$(SOURCE_ROOT)/bk3266ota/bk3266br/tools/crc32_win"
 else  # Win32
 ifeq ($(HOST_OS),Linux32)
 CRC := "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/tools/crc/linux/crc"
 XZ 		:= "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/tools/xz/linux/xz"
+BK3266CRC := "$(SOURCE_ROOT)/bk3266ota/bk3266br/tools/crc32_linux"
 else # Linux32
 ifeq ($(HOST_OS),Linux64)
 CRC := "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/tools/crc/linux/crc"
 XZ 		:= "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/tools/xz/linux/xz"
+BK3266CRC := "$(SOURCE_ROOT)/bk3266ota/bk3266br/tools/crc32_linux"
 else # Linux64
 ifeq ($(HOST_OS),OSX)
 CRC := "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/tools/crc/osx/crc"
 XZ 		:= "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/tools/xz/osx/xz"
+BK3266CRC := "$(SOURCE_ROOT)/bk3266ota/bk3266br/tools/crc32_osx"
 else # OSX
 $(error not surport for $(HOST_OS))
 endif # OSX
@@ -47,7 +51,7 @@ APP_OFFSET := 0x13200
 
 #ate firmware
 ATE_BIN_FILE := $(MICO_OS_PATH)/resources/ate_firmware/$(MODULE)/ate.bin
-ATE_OFFSET := 0x100100
+ATE_OFFSET := 0x1C5000
 
 # Required to build Full binary file
 GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT:= $(SCRIPTS_PATH)/gen_common_bin_output_file.py
@@ -64,11 +68,37 @@ $(OTA_BIN_OUTPUT_FILE): $(CRC_BIN_OUTPUT_FILE)
 	$(RM) $(CRC_XZ_BIN_OUTPUT_FILE)
 	$(PYTHON) $(ADD_MD5_SCRIPT) $(OTA_BIN_OUTPUT_FILE)
 
-$(MICO_ALL_BIN_OUTPUT_FILE): $(OTA_BIN_OUTPUT_FILE)
+BK3266_OTA_FILE := lib_audio_3266/firmware/5.1/BK326x_s_flash_image_crc.bin
+BK3266_OTA_OFFSET := 0x145000
+BK3266_OTA_XZ_FILE := $(BK3266_OTA_FILE:.bin=.bin.xz)
+
+BK3266_OTA_HDR_FILE := $(BK3266_OTA_FILE:.bin=.otahdr.bin)
+BK3266_OTA_HDR_OFFSET := 0x12000
+BK3266_OTA_HDR_SCRIPT := bk3266ota/tools/bk3266otahdr.py
+
+AUDIO_FILE := build/$(CLEANED_BUILD_STRING)/resources/filesystem.bin
+AUDIO_OFFSET := 0x200000
+
+$(BK3266_OTA_XZ_FILE): $(BK3266_OTA_FILE) build_done
+	$(QUIET)$(ECHO) Compressing $< ...
+	$(XZ) --lzma2=dict=32KiB --check=crc32 -k $<
+
+$(BK3266_OTA_HDR_FILE): $(BK3266_OTA_XZ_FILE)
+	$(QUIET)$(ECHO) Making $@ ...
+	$(eval SIZEVAL := $(shell $(PYTHON) $(IMAGE_SIZE_SCRIPT) $(BK3266_OTA_XZ_FILE)))
+	$(eval CRCVAL := $(shell $(BK3266CRC) -f $(BK3266_OTA_FILE) -l 0xFD000))
+	$(PYTHON) $(BK3266_OTA_HDR_SCRIPT) -s $(SIZEVAL) -c $(CRCVAL) -o $@
+	
+$(MICO_ALL_BIN_OUTPUT_FILE): $(OTA_BIN_OUTPUT_FILE) $(BK3266_OTA_HDR_FILE)
+	$(QUIET)$(ECHO) Making $@ ...
 	$(CP) $(BIN_OUTPUT_FILE) $(RAW_BIN_OUTPUT_FILE)
 	$(CP) $(CRC_BIN_OUTPUT_FILE) $(BIN_OUTPUT_FILE)
 	$(RM) $(CRC_BIN_OUTPUT_FILE)
 	$(QUIET)$(RM) $(MICO_ALL_BIN_OUTPUT_FILE)
-	$(PYTHON) $(GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT) -o $(MICO_ALL_BIN_OUTPUT_FILE) -f $(BOOT_OFFSET) $(BOOT_BIN_FILE)              
+	$(PYTHON) $(GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT) -o $(MICO_ALL_BIN_OUTPUT_FILE) -f $(BOOT_OFFSET) $(BOOT_BIN_FILE)
+	$(PYTHON) $(GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT) -o $(MICO_ALL_BIN_OUTPUT_FILE) -f $(BK3266_OTA_HDR_OFFSET) $(BK3266_OTA_HDR_FILE)
 	$(PYTHON) $(GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT) -o $(MICO_ALL_BIN_OUTPUT_FILE) -f $(APP_OFFSET)  $(APP_BIN_FILE)
+	$(PYTHON) $(GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT) -o $(MICO_ALL_BIN_OUTPUT_FILE) -f $(BK3266_OTA_OFFSET)  $(BK3266_OTA_XZ_FILE)
 	$(PYTHON) $(GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT) -o $(MICO_ALL_BIN_OUTPUT_FILE) -f $(ATE_OFFSET)  $(ATE_BIN_FILE)
+	$(RM) $(BK3266_OTA_XZ_FILE)
+	$(RM) $(BK3266_OTA_HDR_FILE)
