@@ -50,30 +50,6 @@ BOOTLOADER_SUB_BUILD:=1
 endif #$(total,$(findstring total,$(MAKECMDGOALS)))
 endif #$(findstring bootloader, $(BUILD_STRING))
 
-
-# Target "total" not exist, no need to build bootloader
-ifeq ($(audio),1)
-FILE_BIN_SCRIPT:= $(MAKEFILES_PATH)/scripts/flash_pack.py
-FILE_BIN_NUM:= 001
-FILES_BIN_NAME:= filesystem
-
-# If do not exist resources folder, error
-APP_FILE_RESOURCE := $(APP_FULL)/resources
-ifeq ($(APP_FILE_RESOURCE), $(wildcard $(APP_FILE_RESOURCE)))
-SFLASH_GEN_FTFS_BIN:= build/$(APP_FULL)@$(PLATFORM)/resources/filesystem.bin
-else
-SFLASH_GEN_FTFS_BIN:= 
-
-sflash_gen_filesystem:$(STRIPPED_LINK_OUTPUT_FILE) display_map_summary download_bootloader sflash_write_app kill_openocd
-	$(QUIET)$(ECHO) Generating Filesystem Image...
-	$(QUIET)$(shell $(PYTHON) $(FILE_BIN_SCRIPT) $(FILE_BIN_NUM) $(FILES_BIN_NAME).bin $(APP_FILE_RESOURCE))
-	$(QUIET)$(MV) $(SOURCE_ROOT)$(FILES_BIN_NAME).bin $(SOURCE_ROOT)build/$(CLEANED_BUILD_STRING)/resources
-	$(QUIET)$(ECHO) Finished Generating Filesystem Image
-	$(QUIET)$(ECHO_BLANK_LINE)
-
-endif
-endif
-
 ifeq ($(BOOTLOADER_SUB_BUILD),1)
 bootloader:
 	$(QUIET)$(ECHO) Building Bootloader...
