@@ -19,7 +19,7 @@ proc flash_boot_check { } {
     }
 }
 
-proc flash_program { file_name dest_addr } {
+proc flash_program { file_name dest_addr xz_en} {
 
     soft_reset_halt
     mww 0x400018 0xAAAAAAAA
@@ -32,7 +32,8 @@ proc flash_program { file_name dest_addr } {
     set update_file_size       [expr $updata_ram + 0x04]
     set update_stream_size     [expr $updata_ram + 0x08]
     set update_status          [expr $updata_ram + 0x0C]
-    set update_data_buffer     [expr $updata_ram + 0x10]
+    set update_xz_en           [expr $updata_ram + 0x10]
+    set update_data_buffer     [expr $updata_ram + 0x14]
 
     set UPDATE_STATUS_READY      1
     set UPDATE_STATUS_SUCCESS    2
@@ -44,6 +45,7 @@ proc flash_program { file_name dest_addr } {
     # puts "Write $file_name to flash, total size is $bin_file_size"
     mww $update_dest_addr $dest_addr
     mww $update_file_size $bin_file_size
+    mww $update_xz_en $xz_en
     while { $pos < $bin_file_size } {
 
         if { ($bin_file_size - $pos) <  $buffer_size } {

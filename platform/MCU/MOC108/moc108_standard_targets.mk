@@ -99,30 +99,6 @@ endif
 total:
 	@:
 
-download_app: $(STRIPPED_LINK_OUTPUT_FILE) display_map_summary download_bootloader sflash_write_app kill_openocd
-	$(eval IMAGE_SIZE := $(shell $(PYTHON) $(IMAGE_SIZE_SCRIPT) $(BIN_OUTPUT_FILE)))
-	$(QUIET)$(ECHO) Downloading application to partition: $(APPLICATION_FIRMWARE_PARTITION_TCL) size: $(IMAGE_SIZE) bytes... 
-	$(PYTHON) mico-os/sub_build/spi_flash_write_progressbar/sflash_write_moc108.py -o $(OPENOCD_FULL_NAME) -f $(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.ota$(BIN_OUTPUT_SUFFIX)) -a 0x13200
-
-download_filesys: download_app sflash_gen_filesystem
-	$(eval IMAGE_SIZE := $(shell $(PYTHON) $(IMAGE_SIZE_SCRIPT) $(file_bin_path)))
-	$(QUIET)$(ECHO) Downloading filesystem to partition: $(FILESYSTEM_IMAGE_PARTITION_TCL) size: $(IMAGE_SIZE) bytes... 
-	$(PYTHON) mico-os/sub_build/spi_flash_write_progressbar/sflash_write_moc108.py -o $(OPENOCD_FULL_NAME) -f build/$(CLEANED_BUILD_STRING)/resources/filesystem.bin -a 0x200000
-
-ifeq (download,$(filter download,$(MAKECMDGOALS)))
-ifeq ($(audio),1)
-EXT_IMAGES_DOWNLOAD_DEP := download_filesys
-file_bin_path := build/$(CLEANED_BUILD_STRING)/resources/filesystem.bin
-else
-EXT_IMAGES_DOWNLOAD_DEP := download_app
-endif
-endif
-
-download: $(EXT_IMAGES_DOWNLOAD_DEP)
-
-kill_openocd:
-	$(KILL_OPENOCD)
-
 $(if $(RTOS),,$(error No RTOS specified. Options are: $(notdir $(wildcard MiCO/RTOS/*))))
 
 run: $(SHOULD_I_WAIT_FOR_DOWNLOAD)

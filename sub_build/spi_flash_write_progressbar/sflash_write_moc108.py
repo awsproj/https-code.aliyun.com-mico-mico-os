@@ -30,6 +30,7 @@ def sflasher(argv):
     parser.add_argument('-o', '--openocd'   , type=str, required=True, help='openocd path')
     parser.add_argument('-f', '--file'	    , type=str, required=True, help='File name')
     parser.add_argument('-a', '--addr'      , type=str, required=True, help='Address')
+    parser.add_argument('-x', '--xz'        , type=str, required=False, default='1', help='XZ')
     args = parser.parse_args(argv)
 
     hostos = 'OSX' if sys.platform == 'darwin' else 'Linux64' if sys.platform == 'linux2' else 'Win32'
@@ -37,14 +38,16 @@ def sflasher(argv):
     cmd = '%s -f mico-os/makefiles/OpenOCD/interface/jlink.cfg \
     -f mico-os/makefiles/OpenOCD/MOC108/MOC108.cfg \
     -f mico-os/makefiles/OpenOCD/MOC108/flash.tcl \
-    -c init -c flash_boot_check -c "flash_program %s %s" -c shutdown 2>build/openocd.log'%(args.openocd, args.file, args.addr)
+    -c init -c flash_boot_check -c "flash_program %s %s %s" -c shutdown 2>build/openocd.log'%(args.openocd, args.file, args.addr, args.xz)
     proc = Popen(cmd, shell=True, universal_newlines=True, stdout=PIPE)
     while True:
         out = proc.stdout.readline().strip()
-        if proc.poll() != None:
-            if proc.poll():
-                with open('build/openocd.log', 'r') as f:
-                    print(f.read())
+        rc = proc.poll()
+        if rc != None:
+            if rc == 0:
+                break
+            with open('build/openocd.log', 'r') as f:
+                print(f.read())
             return
         else:
             if out.isdigit():

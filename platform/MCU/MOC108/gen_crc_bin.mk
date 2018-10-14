@@ -115,3 +115,31 @@ $(MICO_ALL_BIN_OUTPUT_FILE): $(OTA_BIN_OUTPUT_FILE) $(BK3266_OTA_HDR_FILE) sflas
 	$(PYTHON) $(GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT) -o $(MICO_ALL_BIN_OUTPUT_FILE) -f $(BK3266_OTA_OFFSET)  $(BK3266_OTA_XZ_FILE)
 	$(PYTHON) $(GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT) -o $(MICO_ALL_BIN_OUTPUT_FILE) -f $(ATE_OFFSET)  $(ATE_BIN_FILE)
 	$(PYTHON) $(GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT) -o $(MICO_ALL_BIN_OUTPUT_FILE) -f $(AUDIO_OFFSET)  $(AUDIO_FILE)
+
+dt ?= app
+
+download: $(dt)
+
+APP_OTA_FILE := $(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.ota$(BIN_OUTPUT_SUFFIX))
+
+app: $(MICO_ALL_BIN_OUTPUT_FILE)
+	$(eval IMAGE_SIZE := $(shell $(PYTHON) $(IMAGE_SIZE_SCRIPT) $(APP_OTA_FILE)))
+	$(QUIET)$(ECHO) Downloading $(APP_OTA_FILE), size: $(IMAGE_SIZE) bytes... 
+	$(PYTHON) mico-os/sub_build/spi_flash_write_progressbar/sflash_write_moc108.py -o $(OPENOCD_FULL_NAME) -f $(APP_OTA_FILE) -a 0x13200
+
+codec: $(MICO_ALL_BIN_OUTPUT_FILE)
+	$(eval IMAGE_SIZE := $(shell $(PYTHON) $(IMAGE_SIZE_SCRIPT) $(BK3266_OTA_HDR_FILE)))
+	$(QUIET)$(ECHO) Downloading $(BK3266_OTA_HDR_FILE), size: $(IMAGE_SIZE) bytes... 
+	$(PYTHON) mico-os/sub_build/spi_flash_write_progressbar/sflash_write_moc108.py -o $(OPENOCD_FULL_NAME) -f $(BK3266_OTA_HDR_FILE) -a $(BK3266_OTA_HDR_OFFSET)
+	$(eval IMAGE_SIZE := $(shell $(PYTHON) $(IMAGE_SIZE_SCRIPT) $(BK3266_OTA_XZ_FILE)))
+	$(QUIET)$(ECHO) Downloading $(BK3266_OTA_XZ_FILE), size: $(IMAGE_SIZE) bytes... 
+	$(PYTHON) mico-os/sub_build/spi_flash_write_progressbar/sflash_write_moc108.py -o $(OPENOCD_FULL_NAME) -f $(BK3266_OTA_XZ_FILE) -a $(BK3266_OTA_OFFSET) -x 0
+
+audio: $(MICO_ALL_BIN_OUTPUT_FILE)
+	echo $(OPENOCD_FULL_NAME)
+	$(eval IMAGE_SIZE := $(shell $(PYTHON) $(IMAGE_SIZE_SCRIPT) $(AUDIO_FILE)))
+	$(QUIET)$(ECHO) Downloading $(AUDIO_FILE), size: $(IMAGE_SIZE) bytes... 
+	$(PYTHON) mico-os/sub_build/spi_flash_write_progressbar/sflash_write_moc108.py -o $(OPENOCD_FULL_NAME) -f $(AUDIO_FILE) -a $(AUDIO_OFFSET)
+
+kill_openocd:
+	$(KILL_OPENOCD)
