@@ -3,6 +3,8 @@
 #include "vcall.h"
 #include "mico.h"
 
+static mico_mutex_t kv_mutex;
+
 void aos_free(void *mem)
 {
     free(mem);
@@ -11,6 +13,21 @@ void aos_free(void *mem)
 void *aos_malloc(unsigned int size)
 {
     return malloc(size);
+}
+
+void kv_lock_init(void)
+{
+    mico_rtos_init_mutex(&kv_mutex);
+}
+
+void kv_lock(void)
+{
+    mico_rtos_lock_mutex(&kv_mutex);
+}
+
+void kv_unlock(void)
+{
+    mico_rtos_unlock_mutex(&kv_mutex);
 }
 
 int32_t hal_flash_erase(hal_partition_t in_partition, uint32_t off_set, uint32_t size)
