@@ -168,6 +168,13 @@ SECTIONS
 		_ebss = .;
 	} > ram						/* in RAM */
 
+	.ARM.exidx : {
+    __exidx_start = .;
+     *(.ARM.exidx* .gnu.linkonce.armexidx.*)
+    __exidx_end = .;
+  } >flash
+  _etext = .; 
+  
 	. = ALIGN (8);
 	_empty_ram = .;
 
