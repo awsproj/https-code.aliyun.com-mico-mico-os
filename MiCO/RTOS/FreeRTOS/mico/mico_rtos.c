@@ -29,6 +29,7 @@
 #include "queue.h"
 #include "semphr.h"
 #include "task.h"
+#include "event_groups.h"
 #include "mico_FreeRTOS_systick.h"
 #include "FreeRTOSConfig.h"
 #include "timers.h"
@@ -943,5 +944,65 @@ char *mico_current_task_name(void)
     return pcTaskGetName(NULL);
 }
 
+OSStatus mico_rtos_eventgroup_init(mico_event_group_t *handler)
+{
+    if (handler == NULL) {
+        return kParamErr;
+    }
+    *handler = xEventGroupCreate();
+    if (*handler == NULL) {
+        return kNoMemoryErr;
+    }
+
+    return kNoErr;
+}
+OSStatus mico_rtos_eventgroup_deinit(mico_event_group_t * handler)
+{
+    if (handler == NULL)
+        return kNoErr;
+
+    if (*handler == NULL)
+        return kNoErr;
+    
+    vEventGroupDelete(*handler);
+    *handler = NULL;
+    
+    return kNoErr;
+}
+int mico_rtos_eventgroup_set_bits(mico_event_group_t * handler, int bits)
+{
+    int result;
+
+    if (handler == NULL) {
+        return 0;
+    }
+    
+    result = xEventGroupSetBits(*handler, bits);
+
+    return result;
+}
+
+int mico_rtos_eventgroup_clear_bits(mico_event_group_t * handler, int bits)
+{
+    int result;
+
+    if (handler == NULL) {
+        return 0;
+    }
+    
+    result = xEventGroupClearBits(*handler, bits);
+    return result;
+}
+
+int mico_rtos_eventgroup_wait_bits(mico_event_group_t * handler, int bits, 
+                                    int isClearOnExit, int isWaitForAllBits, int waitMs)
+{
+    if (handler == NULL) {
+        return 0;
+    }
+    return xEventGroupWaitBits( *handler, bits, isClearOnExit, isWaitForAllBits, waitMs / ms_to_tick_ratio );
+}
+
 //#endif
+
 

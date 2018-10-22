@@ -45,7 +45,8 @@ GLOBAL_INCLUDES := ver$(VERSION)/Source/include \
 $(NAME)_SOURCES +=  ver$(VERSION)/Source/croutine.c \
                     ver$(VERSION)/Source/list.c \
                     ver$(VERSION)/Source/queue.c \
-                    ver$(VERSION)/Source/tasks.c
+                    ver$(VERSION)/Source/tasks.c \
+                    ver$(VERSION)/Source/event_groups.c
                     
 ifeq ($(VERSION_MAJOR),7)
 $(NAME)_SOURCES += ver$(VERSION)/Source/ostimers.c
