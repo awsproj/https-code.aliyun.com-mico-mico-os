@@ -68,7 +68,7 @@ $(OTA_BIN_OUTPUT_FILE): $(CRC_BIN_OUTPUT_FILE)
 	$(RM) $(CRC_XZ_BIN_OUTPUT_FILE)
 	$(PYTHON) $(ADD_MD5_SCRIPT) $(OTA_BIN_OUTPUT_FILE)
 
-BK3266_OTA_FILE := lib_audio_3266/firmware/1.7/BK326x_s_flash_image_crc_10161159.bin
+BK3266_OTA_FILE := lib_audio_3266/firmware/1.9/BK326x_s_flash_image_2_crc.bin
 BK3266_OTA_FILE_NAME := $(notdir $(BK3266_OTA_FILE))
 BK3266_OTA_OFFSET := 0x145000
 BK3266_OTA_XZ_FILE :=  build/$(CLEANED_BUILD_STRING)/resources/$(BK3266_OTA_FILE_NAME:.bin=.bin.xz)
@@ -89,8 +89,9 @@ $(BK3266_OTA_XZ_FILE): $(BK3266_OTA_FILE)
 
 $(BK3266_OTA_HDR_FILE): $(BK3266_OTA_XZ_FILE)
 	$(QUIET)$(ECHO) Making $@ ...
+	$(eval SIZEVAL := $(shell $(PYTHON) $(IMAGE_SIZE_SCRIPT) $(BK3266_OTA_FILE)))
+	$(eval CRCVAL := $(shell $(BK3266CRC) -f $(BK3266_OTA_FILE) -l $(SIZEVAL)))
 	$(eval SIZEVAL := $(shell $(PYTHON) $(IMAGE_SIZE_SCRIPT) $(BK3266_OTA_XZ_FILE)))
-	$(eval CRCVAL := $(shell $(BK3266CRC) -f $(BK3266_OTA_FILE) -l 0xFD000))
 	$(PYTHON) $(BK3266_OTA_HDR_SCRIPT) -s $(SIZEVAL) -c $(CRCVAL) -o $@
 
 SFLASH_GEN_FTFS_BIN:= build/$(CLEANED_BUILD_STRING)/resources/filesystem.bin
