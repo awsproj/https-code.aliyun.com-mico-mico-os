@@ -68,7 +68,7 @@ $(OTA_BIN_OUTPUT_FILE): $(CRC_BIN_OUTPUT_FILE)
 	$(RM) $(CRC_XZ_BIN_OUTPUT_FILE)
 	$(PYTHON) $(ADD_MD5_SCRIPT) $(OTA_BIN_OUTPUT_FILE)
 
-BK3266_OTA_FILE := lib_audio_3266/firmware/1.7/BK326x_s_flash_image_crc_10161159.bin
+BK3266_OTA_FILE := lib_audio_3266/firmware/2.0/BK326x_s_flash_image_crc.bin
 BK3266_OTA_FILE_NAME := $(notdir $(BK3266_OTA_FILE))
 BK3266_OTA_OFFSET := 0x145000
 BK3266_OTA_XZ_FILE :=  build/$(CLEANED_BUILD_STRING)/resources/$(BK3266_OTA_FILE_NAME:.bin=.bin.xz)
