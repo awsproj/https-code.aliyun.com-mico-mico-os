@@ -89,8 +89,9 @@ $(BK3266_OTA_XZ_FILE): $(BK3266_OTA_FILE)
 
 $(BK3266_OTA_HDR_FILE): $(BK3266_OTA_XZ_FILE)
 	$(QUIET)$(ECHO) Making $@ ...
+	$(eval SIZEVAL := $(shell $(PYTHON) $(IMAGE_SIZE_SCRIPT) $(BK3266_OTA_FILE)))
+	$(eval CRCVAL := $(shell $(BK3266CRC) -f $(BK3266_OTA_FILE) -l $(SIZEVAL)))
 	$(eval SIZEVAL := $(shell $(PYTHON) $(IMAGE_SIZE_SCRIPT) $(BK3266_OTA_XZ_FILE)))
-	$(eval CRCVAL := $(shell $(BK3266CRC) -f $(BK3266_OTA_FILE) -l 0xFD000))
 	$(PYTHON) $(BK3266_OTA_HDR_SCRIPT) -s $(SIZEVAL) -c $(CRCVAL) -o $@
 
 SFLASH_GEN_FTFS_BIN:= build/$(CLEANED_BUILD_STRING)/resources/filesystem.bin
