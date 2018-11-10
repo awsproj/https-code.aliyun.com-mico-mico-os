@@ -32,7 +32,7 @@ static mico_worker_thread_t wlan_autoconf_worker_thread;
  *               Variables Definitions
  ******************************************************/
 
-static OSStatus system_config_mode_stop_worker( void *arg )
+OSStatus system_config_mode_stop_worker( void *arg )
 {
     OSStatus err = kNoErr;
     mico_Context_t* in_context = mico_system_context_get();
@@ -63,7 +63,7 @@ exit:
     return err;
 }
 
-static OSStatus system_config_mode_worker( void *arg )
+OSStatus system_config_mode_worker( void *arg )
 {
     OSStatus err = kNoErr;
     mico_Context_t* in_context = mico_system_context_get();
