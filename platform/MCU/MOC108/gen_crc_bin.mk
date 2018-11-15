@@ -51,7 +51,7 @@ APP_OFFSET := 0x13200
 
 #ate firmware
 ATE_BIN_FILE := $(MICO_OS_PATH)/resources/ate_firmware/$(MODULE)/ate.bin
-ATE_OFFSET := 0x1C5000
+ATE_OFFSET := 0x1C501C
 
 # Required to build Full binary file
 GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT:= $(SCRIPTS_PATH)/gen_common_bin_output_file.py
