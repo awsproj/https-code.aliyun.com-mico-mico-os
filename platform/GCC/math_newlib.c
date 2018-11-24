@@ -56,7 +56,7 @@ double sin( double x )
 /* Simple Taylor series approximation of natural logarithm function
  * see http://www.efunda.com/math/taylor_series/logarithmic.cfm
  */
-
+#if 0
 double log( double x )
 {
     int term = 1;
@@ -74,3 +74,5 @@ double log( double x )
     }
     return 2 * val;
 }
+#endif
+

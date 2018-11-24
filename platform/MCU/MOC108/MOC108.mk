@@ -22,7 +22,6 @@ GLOBAL_INCLUDES := . \
                    ../../include \
                    ../../$(TOOLCHAIN_NAME) \
                    ../../$(HOST_ARCH) \
-                   ../../$(HOST_ARCH)/CMSIS \
                    peripherals
 
 GLOBAL_INCLUDES += lwip/include/
