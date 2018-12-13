@@ -1,28 +1,7 @@
 EXTRA_POST_BUILD_TARGETS += $(MICO_ALL_BIN_OUTPUT_FILE)
 
-ifeq ($(HOST_OS),Win32)
-CRC := "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC109/tools/crc/win/crc.exe"
-XZ 		:= "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC109/tools/xz/win/xz.exe"
-else  # Win32
-ifeq ($(HOST_OS),Linux32)
-CRC := "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC109/tools/crc/linux/crc"
-XZ 		:= "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC109/tools/xz/linux/xz"
-else # Linux32
-ifeq ($(HOST_OS),Linux64)
-CRC := "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC109/tools/crc/linux/crc"
-XZ 		:= "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC109/tools/xz/linux/xz"
-else # Linux64
-ifeq ($(HOST_OS),OSX)
-CRC := "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC109/tools/crc/osx/crc"
-XZ 		:= "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC109/tools/xz/osx/xz"
-else # OSX
-$(error not surport for $(HOST_OS))
-endif # OSX
-endif # Linux64
-endif # Linux32
-endif # Win32
-
-ADD_MD5_SCRIPT := $(SOURCE_ROOT)/mico-os/platform/MCU/MOC109/tools/add_md5.py
+CRC := "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC109/tools/crc/$(HOST_OS)/crc"
+XZ 	:= "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC109/tools/xz/$(HOST_OS)/xz"
 
 # _crc.bin
 CRC_BIN_OUTPUT_FILE :=$(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=_crc$(BIN_OUTPUT_SUFFIX))
@@ -33,12 +12,8 @@ OTA_BIN_OUTPUT_FILE := $(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.ota$(BIN_OUTPUT
 # .raw.bin
 RAW_BIN_OUTPUT_FILE := $(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.raw$(BIN_OUTPUT_SUFFIX))
 
-#bootloader
-ifneq (,$(filter MK5060,$(PLATFORM)))
-BOOT_BIN_FILE := $(MICO_OS_PATH)/resources/moc_kernel/$(MODULE)/boot_qc.bin
-else
 BOOT_BIN_FILE := $(MICO_OS_PATH)/resources/moc_kernel/$(MODULE)/boot.bin
-endif
+
 BOOT_OFFSET   := 0x0
 
 #application 
@@ -62,7 +37,6 @@ $(OTA_BIN_OUTPUT_FILE): $(CRC_BIN_OUTPUT_FILE)
 	$(XZ) --lzma2=dict=32KiB --check=crc32 -k $(CRC_BIN_OUTPUT_FILE)
 	$(CP) $(CRC_XZ_BIN_OUTPUT_FILE) $(OTA_BIN_OUTPUT_FILE)
 	$(RM) $(CRC_XZ_BIN_OUTPUT_FILE)
-	$(PYTHON) $(ADD_MD5_SCRIPT) $(OTA_BIN_OUTPUT_FILE)
 
 $(MICO_ALL_BIN_OUTPUT_FILE): $(OTA_BIN_OUTPUT_FILE)
 	$(CP) $(BIN_OUTPUT_FILE) $(RAW_BIN_OUTPUT_FILE)

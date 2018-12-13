@@ -32,111 +32,107 @@ extern int errno;
 #endif
 
 /************** wrap C library functions **************/
-void * __wrap_malloc (size_t size)
+void *__wrap_malloc(size_t size)
 {
-	return pvPortMalloc(size);
+    return pvPortMalloc(size);
 }
 
-void * __wrap__malloc_r (void *p, size_t size)
+void *__wrap__malloc_r(void *p, size_t size)
 {
-	
-	return pvPortMalloc(size);
+
+    return pvPortMalloc(size);
 }
 
-void __wrap_free (void *pv)
+void __wrap_free(void *pv)
 {
-	vPortFree(pv);
+    vPortFree(pv);
 }
 
-void * __wrap_calloc (size_t a, size_t b)
+void *__wrap_calloc(size_t a, size_t b)
 {
-	void *pvReturn;
+    void *pvReturn;
 
-    pvReturn = pvPortMalloc( a*b );
+    pvReturn = pvPortMalloc(a * b);
     if (pvReturn)
     {
-        memset(pvReturn, 0, a*b);
+        memset(pvReturn, 0, a * b);
     }
 
     return pvReturn;
 }
 
-void * __wrap__calloc_r (void *p, size_t a, size_t b)
+void *__wrap__calloc_r(void *p, size_t a, size_t b)
 {
-	void *pvReturn;
+    void *pvReturn;
 
-    pvReturn = pvPortMalloc( a*b );
+    pvReturn = pvPortMalloc(a * b);
     if (pvReturn)
     {
-        memset(pvReturn, 0, a*b);
+        memset(pvReturn, 0, a * b);
     }
 
     return pvReturn;
 }
 
-void * __wrap_realloc (void* pv, size_t size)
+void *__wrap_realloc(void *pv, size_t size)
 {
-	return pvPortRealloc(pv, size);
+    return pvPortRealloc(pv, size);
 }
 
-void __wrap__free_r (void *p, void *x)
+void __wrap__free_r(void *p, void *x)
 {
-  __wrap_free(x);
+    __wrap_free(x);
 }
 
-void* __wrap__realloc_r (void *p, void* x, size_t sz)
+void *__wrap__realloc_r(void *p, void *x, size_t sz)
 {
-  return __wrap_realloc (x, sz);
+    return __wrap_realloc(x, sz);
 }
 
-int __wrap_printf (const char* format, ...)
+int __wrap_printf(const char *format, ...)
 {
-  int size;
-  va_list ap;
-	static char print_buf[1024];
+    int size;
+    va_list ap;
+    static char print_buf[1024];
 
-	va_start(ap, format);
-	size = vsnprintf(print_buf, sizeof(print_buf) - 1, format, ap);
-	va_end(ap);
+    va_start(ap, format);
+    size = vsnprintf(print_buf, sizeof(print_buf) - 1, format, ap);
+    va_end(ap);
 
-	MicoUartSend(STDIO_UART, print_buf, size);
+    MicoUartSend(STDIO_UART, print_buf, size);
 
-	return size;
+    return size;
 }
 
-int _gettimeofday( struct timeval * __p, void * __tz )
+int _gettimeofday(struct timeval *__p, void *__tz)
 {
     mico_utc_time_ms_t current_utc_time_ms = 0;
     uint64_t current_time_ns;
-    mico_time_get_utc_time_ms( &current_utc_time_ms );
+    mico_time_get_utc_time_ms(&current_utc_time_ms);
 
     current_time_ns = mico_nanosecond_clock_value();
     __p->tv_sec = current_utc_time_ms / 1000;
-    __p->tv_usec = ( current_utc_time_ms % 1000 ) * 1000 + ( current_time_ns / 1000 ) % 1000;
+    __p->tv_usec = (current_utc_time_ms % 1000) * 1000 + (current_time_ns / 1000) % 1000;
 
     return 0;
 }
 
-int gettimeofday( struct timeval *__restrict __p, void *__restrict __tz )
+int gettimeofday(struct timeval *__restrict __p, void *__restrict __tz)
 {
-    return _gettimeofday( __p, __tz );
+    return _gettimeofday(__p, __tz);
 }
-
 
 time_t time(time_t *tloc)
 {
     mico_utc_time_ms_t current_utc_time_ms = 0;
     unsigned long long t;
 
-    mico_time_get_utc_time_ms( &current_utc_time_ms );
+    mico_time_get_utc_time_ms(&current_utc_time_ms);
 
     t = current_utc_time_ms / 1000;
 
     if (tloc)
-        *tloc = t ;
+        *tloc = t;
 
     return t;
 }
-
-
-

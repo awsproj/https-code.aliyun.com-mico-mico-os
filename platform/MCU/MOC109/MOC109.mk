@@ -16,17 +16,12 @@ HOST_ARCH := ARM968E-S
 # Host MCU alias for OpenOCD
 HOST_OPENOCD := moc109
 
-GLOBAL_INCLUDES := . \
-                   .. \
-                   ../.. \
-                   ../../include \
-                   ../../$(TOOLCHAIN_NAME) \
-                   ../../$(HOST_ARCH) \
-                   ../../$(HOST_ARCH)/CMSIS \
-                   peripherals
-
-GLOBAL_INCLUDES += lwip/include/
-
+GLOBAL_INCLUDES += \
+. \
+../.. \
+../../include \
+../../$(TOOLCHAIN_NAME) \
+../../$(HOST_ARCH)
 
 # Global flags
 GLOBAL_CFLAGS   += $$(CPU_CFLAGS) -fno-builtin-printf -Wno-implicit-function-declaration -Wno-int-conversion -Wno-unused-variable -Wno-unused-function
@@ -46,13 +41,8 @@ endif
 
 GLOBAL_LDFLAGS += -Wl,-wrap,printf
 
-GLOBAL_LDFLAGS  += -L ./platform/MCU/$(NAME)/$(TOOLCHAIN_NAME)
+GLOBAL_LDFLAGS  += -L .
 GLOBAL_LDFLAGS  += --specs=nosys.specs
-
-# Components
-ifdef TEMP_COMMENT
-$(NAME)_COMPONENTS += $(TOOLCHAIN_NAME)
-endif
 
 ifdef TOOLCHAIN_NAME
 $(NAME)_PREBUILT_LIBRARY := peripherals.$(HOST_ARCH).$(TOOLCHAIN_NAME).release.a
@@ -60,54 +50,14 @@ $(NAME)_PREBUILT_LIBRARY += MOC109.$(HOST_ARCH).$(TOOLCHAIN_NAME).release.a
 endif
 
 # Source files
-$(NAME)_SOURCES := platform_stub.c \
-				   ../../$(HOST_ARCH)/platform_core.c \
-                   ../mico_platform_common.c \
-                   platform_init.c
-                   
+$(NAME)_SOURCES := \
+platform_stub.c \
+../../$(HOST_ARCH)/platform_core.c \
+../mico_platform_common.c \
+platform_init.c
 
-# Extra build target in mico_standard_targets.mk, include bootloader, and copy output file to eclipse debug file (copy_output_for_eclipse)
-EXTRA_TARGET_MAKEFILES +=  ./mico-os/platform/MCU/MOC109/moc108_standard_targets.mk
-EXTRA_TARGET_MAKEFILES +=  ./mico-os/platform/MCU/MOC109/gen_crc_bin.mk
+EXTRA_TARGET_MAKEFILES += \
+mico-os/platform/MCU/MOC109/flash.mk  \
+mico-os/platform/MCU/MOC109/image.mk
 
-ifeq ($(APP),bootloader)
-####################################################################################
-# Building bootloader
-####################################################################################
-
-DEFAULT_LINK_SCRIPT += $(TOOLCHAIN_NAME)/bootloader$(LINK_SCRIPT_SUFFIX)
-GLOBAL_INCLUDES     += 
-
-else
-ifneq ($(filter spi_flash_write, $(APP)),)
-####################################################################################
-# Building spi_flash_write
-####################################################################################
-
-PRE_APP_BUILDS      += bootloader
-DEFAULT_LINK_SCRIPT := $(TOOLCHAIN_NAME)/app_ram$(LINK_SCRIPT_SUFFIX)
-GLOBAL_DEFINES      += __JTAG_FLASH_WRITER_DATA_BUFFER_SIZE__=16384
-GLOBAL_INCLUDES     += 
-
-else
-ifeq ($(USES_BOOTLOADER),1)
-####################################################################################
-# Building standard application to run with bootloader
-####################################################################################
-
-PRE_APP_BUILDS      += bootloader
-DEFAULT_LINK_SCRIPT := $(TOOLCHAIN_NAME)/app_with_bootloader$(LINK_SCRIPT_SUFFIX)
-GLOBAL_INCLUDES     += 
-
-else
-####################################################################################
-# Building a standalone application (standalone app without bootloader)
-####################################################################################
-
-DEFAULT_LINK_SCRIPT := $(TOOLCHAIN_NAME)/app_no_bootloader$(LINK_SCRIPT_SUFFIX)
-GLOBAL_INCLUDES     += 
-
-endif # USES_BOOTLOADER = 1
-endif # APP=spi_flash_write
-endif # APP=bootloader
-
+DEFAULT_LINK_SCRIPT := moc109.ld
