@@ -6,8 +6,6 @@
 #include "mico_platform.h"
 #define ftfs_log(format, ...)  custom_log("ftfs", format, ##__VA_ARGS__)
 
-extern const mico_logic_partition_t mico_partitions[];
-
 static char magic[8] = FT_MAGIC;
 
 int ft_fclose( file *f )
@@ -47,7 +45,7 @@ static FT_FILE *_ft_fopen( struct fs *fs, const char *path, const char *mode )
 
     do
     {
-        MicoFlashRead( MICO_PARTITION_FILESYS, &addr, (uint8_t *) &entry, sizeof(entry) );
+        MicoFlashRead( fs->partition, &addr, (uint8_t *) &entry, sizeof(entry) );
 
         if ( entry.name[0] == '\0' ) /* reached end of table */
         return NULL; /* file not found */
@@ -98,7 +96,7 @@ size_t ft_fread( void *ptr, size_t size, size_t nmemb, file *f )
     {
         if ( stream->fp + size >= stream->length )
             size = stream->length - stream->fp;
-        MicoFlashRead( MICO_PARTITION_FILESYS, &addr, (uint8_t *) (b + len), size );
+        MicoFlashRead( stream->sb->fs.partition, &addr, (uint8_t *) (b + len), size );
         len += size;
         stream->fp += size;
         if ( stream->fp >= stream->length )
@@ -215,14 +213,8 @@ struct fs *ftfs_init( struct ftfs_super *sb, mico_partition_t partition )
 {
     FT_HEADER sec;
     uint32_t start_addr = 0;
-//    struct ftfs_super sb;
-    mico_logic_partition_t *ftfs_partition;
 
-    ftfs_partition = MicoFlashGetInfo( partition );
-
-    start_addr = ftfs_partition->partition_start_addr;
-
-    if ( ft_read_header( &sec, start_addr ) != kNoErr )
+    if ( ft_read_header( &sec, partition ) != kNoErr )
         return NULL;
 
     if ( !ft_is_valid_magic( sec.magic ) )
@@ -255,7 +247,7 @@ bool ft_is_content_valid( mico_partition_t partition, int be_ver )
     FT_HEADER sec1;
     bool ret = false;
 
-    if ( ft_read_header( &sec1, mico_partitions[partition].partition_start_addr ) != kNoErr )
+    if ( ft_read_header( &sec1, partition ) != kNoErr )
         goto ret;
 
     ftfs_log("part: be_ver: %ld", sec1.backend_version);

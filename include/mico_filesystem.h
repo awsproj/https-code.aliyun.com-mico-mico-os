@@ -228,7 +228,7 @@ OSStatus mico_filesystem_init ( void );
  *
  * @return kNoErr on success
  */
-OSStatus mico_filesystem_mount ( mico_block_device_t* device, mico_filesystem_handle_type_t fs_type, mico_filesystem_t* fs_handle_out, const char* mounted_name);
+OSStatus mico_filesystem_mount ( mico_block_device_t* device, mico_filesystem_handle_type_t fs_type, mico_filesystem_t* fs_handle_out, const char* mounted_name, mico_partition_t partition);
 
 
 /**
@@ -550,6 +550,7 @@ struct mico_filesystem_struct
         } fatfs;
 #endif /* USING_FATFS */
     } data;
+    mico_partition_t partition;
 };
 
 

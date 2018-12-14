@@ -70,7 +70,7 @@ static OSStatus fatfs_dir_close( mico_dir_t* dir_handle );
 static OSStatus fatfs_dir_create( mico_filesystem_t* fs_handle, const char* directory_name );
 static OSStatus fatfs_format( mico_block_device_t* device );
 static OSStatus fatfs_get_info( mico_filesystem_info* info,char* mounted_name );
-static OSStatus fatfs_scan_files( char* mounted_name, mico_scan_file_handle arg );
+static OSStatus fatfs_scan_files(mico_filesystem_t* fs_handle, char* mounted_name, mico_scan_file_handle arg );
 
 /******************************************************
  *               Variable Definitions
@@ -633,7 +633,7 @@ static OSStatus fatfs_get_info( mico_filesystem_info* info,char* mounted_name )
     return kNoErr;
 }
 
-static OSStatus fatfs_scan_files( char* mounted_name, mico_scan_file_handle arg )
+static OSStatus fatfs_scan_files(mico_filesystem_t* fs_handle,  char* mounted_name, mico_scan_file_handle arg )
 {
     FRESULT res;
     FILINFO fno;
@@ -641,6 +641,7 @@ static OSStatus fatfs_scan_files( char* mounted_name, mico_scan_file_handle arg 
 
     char *fn;   /* This function is assuming non-Unicode cfg. */
 
+    UNUSED_PARAMETER(fs_handle);
   #if _USE_LFN
     static char lfn[_MAX_LFN + 1];   /* Buffer to store the LFN */
     fno.lfname = lfn;

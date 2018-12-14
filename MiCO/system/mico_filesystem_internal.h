@@ -73,7 +73,7 @@ struct mico_filesystem_driver_struct
     OSStatus (*dir_create)       ( mico_filesystem_t* fs_handle, const char* directory_name );
     OSStatus (*format)           ( mico_block_device_t* device );
     OSStatus (*get_info)         ( mico_filesystem_info* info,char* mounted_name );
-    OSStatus (*scan_files)       ( char* mounted_name, mico_scan_file_handle arg );
+    OSStatus (*scan_files)       ( mico_filesystem_t* fs_handle, char* mounted_name, mico_scan_file_handle arg );
 };
 
 
