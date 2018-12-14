@@ -160,7 +160,7 @@ audio: $(MICO_ALL_BIN_OUTPUT_FILE)
 	$(QUIET)$(ECHO) Downloading $(AUDIO_FILE), size: $(IMAGE_SIZE) bytes... 
 	$(PYTHON) mico-os/sub_build/spi_flash_write_progressbar/sflash_write_moc108.py -o $(OPENOCD_FULL_NAME) -f $(AUDIO_FILE) -a $(AUDIO_OFFSET)
 
-sremind: $(MICO_ALL_BIN_OUTPUT_FILE)
+sr: $(MICO_ALL_BIN_OUTPUT_FILE)
 	echo $(OPENOCD_FULL_NAME)
 	$(eval IMAGE_SIZE := $(shell $(PYTHON) $(IMAGE_SIZE_SCRIPT) $(SOUND_REMIND_FILE)))
 	$(QUIET)$(ECHO) Downloading $(SOUND_REMIND_FILE), size: $(IMAGE_SIZE) bytes... 
