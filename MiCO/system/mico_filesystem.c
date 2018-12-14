@@ -212,7 +212,7 @@ static OSStatus mico_filesystem_del_mounted_device ( mico_filesystem_t* fs_handl
     return kNoErr;
 }
 
-OSStatus mico_filesystem_mount ( mico_block_device_t* device, mico_filesystem_handle_type_t fs_type, mico_filesystem_t* fs_handle_out, const char* mounted_name )
+OSStatus mico_filesystem_mount ( mico_block_device_t* device, mico_filesystem_handle_type_t fs_type, mico_filesystem_t* fs_handle_out, const char* mounted_name,mico_partition_t partition )
 {
     OSStatus result;
 
@@ -222,11 +222,13 @@ OSStatus mico_filesystem_mount ( mico_block_device_t* device, mico_filesystem_ha
 #ifdef USING_FTFS
         case MICO_FILESYSTEM_HANDLE_FTFS:
             fs_handle_out->driver = &mico_filesystem_driver_ftfs;
+            fs_handle_out->partition = partition;
             break;
 #endif /* ifdef USING_micoFS */
 #ifdef USING_FATFS
         case MICO_FILESYSTEM_HANDLE_FATFS:
             fs_handle_out->driver = &mico_filesystem_driver_fatfs;
+            fs_handle_out->partition = partition;
             break;
 #endif /* ifdef USING_FATFS */
 
@@ -411,5 +413,5 @@ OSStatus mico_filesystem_get_info( mico_filesystem_t* fs_handle,mico_filesystem_
 
 OSStatus mico_filesystem_scan_files( mico_filesystem_t* fs_handle, char* mounted_name, mico_scan_file_handle arg )
 {
-    return fs_handle->driver->scan_files( mounted_name, arg );
+    return fs_handle->driver->scan_files( fs_handle, mounted_name, arg );
 }

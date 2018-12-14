@@ -78,7 +78,7 @@ static OSStatus ftfs_dir_rewind( mico_dir_t* dir_handle );
 static OSStatus ftfs_dir_close( mico_dir_t* dir_handle );
 static OSStatus ftfs_dir_create( mico_filesystem_t* fs_handle, const char* directory_name );
 static OSStatus ftfs_format( mico_block_device_t* device );
-static OSStatus ftfs_scan_files( char* mounted_name, mico_scan_file_handle arg );
+static OSStatus ftfs_scan_files( mico_filesystem_t* fs_handle, char* mounted_name, mico_scan_file_handle arg );
 static OSStatus ftfs_get_info( mico_filesystem_info* info,char* mounted_name );
 
 /******************************************************
@@ -126,13 +126,8 @@ static struct fs * ftfs_file_init( struct ftfs_super *sb, mico_partition_t parti
 {
     FT_HEADER sec;
     uint32_t start_addr = 0;
-    mico_logic_partition_t *ftfs_partition;
 
-    ftfs_partition = MicoFlashGetInfo( partition );
-
-    start_addr = ftfs_partition->partition_start_addr;
-
-    if ( ft_read_header( &sec, start_addr ) != kNoErr )
+    if ( ft_read_header( &sec, partition ) != kNoErr )
         return NULL;
 
     if ( !ft_is_valid_magic( sec.magic ) )
@@ -148,7 +143,8 @@ static struct fs * ftfs_file_init( struct ftfs_super *sb, mico_partition_t parti
     sb->fs.fwrite = ft_fwrite;
     sb->fs.ftell = ft_ftell;
     sb->fs.fseek = ft_fseek;
-
+    sb->fs.partition = partition;
+    
     memset( sb->fds, 0, sizeof(sb->fds) );
     sb->fds_mask = 0;
 
@@ -187,7 +183,7 @@ static OSStatus ftfs_file_open( mico_filesystem_t* fs_handle, mico_file_t* file_
     {
         return MICO_FILESYSTEM_WRITE_PROTECTED;
     }
-    fs_handle->data.fs = ftfs_file_init( &(fs_handle->data.sb), MICO_PARTITION_FILESYS );
+    fs_handle->data.fs = ftfs_file_init( &(fs_handle->data.sb), fs_handle->partition );
     fs_handle->data.f = ft_fopen( fs_handle->data.fs, filename, NULL );
     file_handle_out->data.f = fs_handle->data.f;
     if ( fs_handle->data.f == NULL )
@@ -353,16 +349,16 @@ static OSStatus ftfs_format( mico_block_device_t* device )
     return MICO_FILESYSTEM_WRITE_PROTECTED;
 }
 
-static OSStatus ftfs_scan_files( char* mounted_name, mico_scan_file_handle arg )
+static OSStatus ftfs_scan_files( mico_filesystem_t* fs_handle, char* mounted_name, mico_scan_file_handle arg )
 {
-    UNUSED_PARAMETER( mounted_name );
+    UNUSED_PARAMETER(mounted_name);
     char path[]="/";
     uint32_t addr = sizeof(FT_HEADER);
 
     struct ft_entry entry;
     while ( entry.name[0] != '\0' )
     {
-        MicoFlashRead( MICO_PARTITION_FILESYS, &addr, (uint8_t *) &entry, sizeof(entry) );
+        MicoFlashRead( fs_handle->partition, &addr, (uint8_t *) &entry, sizeof(entry) );
         if(entry.name[0] == '\0')
         break;
         arg( path,(char *)entry.name);
