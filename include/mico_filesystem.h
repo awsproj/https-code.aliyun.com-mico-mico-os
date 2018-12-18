@@ -540,7 +540,7 @@ struct mico_filesystem_struct
 #ifdef USING_FTFS
         struct ftfs_super sb;
         struct fs * fs;
-        file * f;
+        //file * f;
 #endif /* USING_WICEDFS */
 #ifdef USING_FATFS
         struct
