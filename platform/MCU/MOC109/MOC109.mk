@@ -44,11 +44,6 @@ GLOBAL_LDFLAGS += -Wl,-wrap,printf
 GLOBAL_LDFLAGS  += -L .
 GLOBAL_LDFLAGS  += --specs=nosys.specs
 
-ifdef TOOLCHAIN_NAME
-$(NAME)_PREBUILT_LIBRARY := peripherals.$(HOST_ARCH).$(TOOLCHAIN_NAME).release.a
-$(NAME)_PREBUILT_LIBRARY += MOC109.$(HOST_ARCH).$(TOOLCHAIN_NAME).release.a
-endif
-
 # Source files
 $(NAME)_SOURCES := \
 platform_stub.c \
@@ -61,3 +56,6 @@ mico-os/platform/MCU/MOC109/flash.mk  \
 mico-os/platform/MCU/MOC109/image.mk
 
 DEFAULT_LINK_SCRIPT := moc109.ld
+
+$(NAME)_COMPONENTS := \
+MCU/MOC109/RTSDK
