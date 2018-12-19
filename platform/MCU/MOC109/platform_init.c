@@ -95,14 +95,6 @@ void platform_mcu_reset(void)
         ;
 }
 
-WEAK void init_memory(void)
-{
-}
-
-void init_architecture(void)
-{
-}
-
 /* mico_main is executed after rtos is start up and before real main*/
 void mico_main(void)
 {
@@ -118,31 +110,9 @@ void mico_main(void)
 #endif
 }
 
-#if 1
-static void app_thread(void *arg)
-{
-    static volatile int t = 0;
-    while (1)
-    {
-        bk_printf("%d\r\n", xTaskGetTickCount());
-        vTaskDelay(1000);
-    }
-}
-
 void _main(void)
 {
     driver_init();
     intc_init();
-    /* Create an initial thread */
-    xTaskCreate(app_thread, "Application", 1024, NULL, 1, NULL);
-    /* Start the FreeRTOS scheduler - this call should never return */
-    vTaskStartScheduler();
-    /* Should never get here, unless there is an error in vTaskStartScheduler */
-    return 0;
-}
-#else
-void _main(void)
-{
     main();
 }
-#endif
