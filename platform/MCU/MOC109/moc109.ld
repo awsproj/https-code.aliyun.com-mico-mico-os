@@ -31,7 +31,7 @@
 MEMORY
 {
         flash  (rx) : ORIGIN = 0x00012000, LENGTH = 1019k /* 1020KB - 96B */
-        ram   (rw!x): ORIGIN = 0x00400020, LENGTH = 512k - 0x20
+        ram   (rw!x): ORIGIN = 0x00400020, LENGTH = 256k - 0x20
 }
 
 OUTPUT_FORMAT("elf32-littlearm", "elf32-littlearm", "elf32-littlearm")
