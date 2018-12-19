@@ -568,10 +568,13 @@ static void aws_handler(char *pcWriteBuffer, int xWriteBufferLen,int argc, char 
 
 static const struct cli_command built_ins[] = {
   {"help", NULL, help_command},
+#ifndef MICO_TODO
   {"version", NULL, get_version},
+#endif
   {"echo", NULL, echo_cmd_handler},
   {"exit", "CLI exit", cli_exit_handler}, 
   
+#ifndef MICO_TODO
 #ifndef PPP_IF
   // WIFI
   {"scan", "scan ap", wifiscan_Command}, 
@@ -581,7 +584,9 @@ static const struct cli_command built_ins[] = {
   {"awsdebug", "enable aws debug info", aws_handler}, 
 #endif
 #endif
+#endif
 
+#ifndef MICO_TODO
   // network
   {"ifconfig", "Show IP address", ifconfig_Command}, 
 #ifndef PPP_IF
@@ -590,6 +595,7 @@ static const struct cli_command built_ins[] = {
   {"ping", "ping <ip>", ping_Command}, 
   {"dns", "show/clean/<domain>", dns_Command}, 
   {"sockshow", "Show all sockets", socket_show_Command}, 
+#endif
   // os
   {"tasklist", "list all thread name status", task_Command}, 
   
@@ -597,15 +603,19 @@ static const struct cli_command built_ins[] = {
   {"memshow", "print memory information", memory_show_Command}, 
   {"memdump", "<addr> <length>", memory_dump_Command}, 
   {"memset", "<addr> <value 1> [<value 2> ... <value n>]", memory_set_Command}, 
+#ifndef MICO_TODO
 #ifndef PPP_IF
   {"memp", "print memp list", memp_dump_Command},
   {"wifidriver", "show wifi driver status", driver_state_Command}, // bus credite, flow control...
 #endif
+#endif
   {"reboot", "reboot MiCO system", reboot},
+#ifndef MICO_TODO
 #ifndef PPP_IF
   {"tftp",     "tftp",                        tftp_Command},
   {"time",     "system time",                 uptime_Command},
   {"ota",      "system ota",                  ota_Command},
+#endif
 #endif
   {"flash",    "Flash memory map",            partShow_Command},
   {"trace",     "show last \"[file:line] arg\"",              trace_cmd},

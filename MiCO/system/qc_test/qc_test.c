@@ -118,11 +118,11 @@ static void _qc_test_calculate_app_crc( char *str, int len )
 
 void mico_system_qc_test( void )
 {
-#if 0
-    mico_rtos_create_thread( NULL, MICO_APPLICATION_PRIORITY, "QC Test", _qc_test_thread, (2048 * 4), 0 );
-#else
+#ifdef MICO_TODO
     printf("Enter QC mode\r\n");
     while(1);
+#else
+    mico_rtos_create_thread( NULL, MICO_APPLICATION_PRIORITY, "QC Test", _qc_test_thread, (2048 * 4), 0 );
 #endif
 }
 
