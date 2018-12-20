@@ -49,6 +49,10 @@ BOOT_OFFSET   := 0x0
 GOLDENMAP_BIN_FILE := $(GOLDENMAP_FILE)
 GOLDENMAP_OFFSET := 0xE000
 
+#audio
+VBS_FLASH_SONG_SRC_PATH := $(VBS_FLASH_SONG_SRC_DIR)
+VBS_FLASH_SOUND_REMIND_SRC_PATH := $(VBS_FLASH_SOUND_REMIND_SRC_DIR)
+
 #application 
 APP_BIN_FILE := $(BIN_OUTPUT_FILE)
 APP_OFFSET := 0x13200
@@ -103,7 +107,7 @@ SFLASH_GEN_FTFS_BIN:= build/$(CLEANED_BUILD_STRING)/resources/filesystem.bin
 FILES_BIN_NAME:= filesystem
 sflash_gen_filesystem: build_done
 	$(QUIET)$(ECHO) Making $(SFLASH_GEN_FTFS_BIN) ...
-	$(QUIET)$(shell $(PYTHON) $(MAKEFILES_PATH)/scripts/flash_pack.py 001 $(FILES_BIN_NAME).bin $(APP_FULL)/resources)
+	$(QUIET)$(shell $(PYTHON) $(MAKEFILES_PATH)/scripts/flash_pack.py 001 $(FILES_BIN_NAME).bin $(VBS_FLASH_SONG_SRC_PATH))
 	$(QUIET)$(MV) $(SOURCE_ROOT)$(FILES_BIN_NAME).bin $(SOURCE_ROOT)build/$(CLEANED_BUILD_STRING)/resources
 
 AUDIO_FILE := $(SFLASH_GEN_FTFS_BIN)
@@ -114,7 +118,7 @@ SOUND_REMIND_FTFS_BIN:= build/$(CLEANED_BUILD_STRING)/resources/sound_remind.bin
 SOUND_REMIND_BIN_NAME:= sound_remind
 sflash_gen_soundremind: build_done
 	$(QUIET)$(ECHO) Making $(SOUND_REMIND_FTFS_BIN) ...
-	$(QUIET)$(shell $(PYTHON) $(MAKEFILES_PATH)/scripts/flash_pack.py 001 $(SOUND_REMIND_BIN_NAME).bin $(APP_FULL)/sound_remind)
+	$(QUIET)$(shell $(PYTHON) $(MAKEFILES_PATH)/scripts/flash_pack.py 001 $(SOUND_REMIND_BIN_NAME).bin $(VBS_FLASH_SOUND_REMIND_SRC_PATH))
 	$(QUIET)$(MV) $(SOURCE_ROOT)$(SOUND_REMIND_BIN_NAME).bin $(SOURCE_ROOT)build/$(CLEANED_BUILD_STRING)/resources
 
 SOUND_REMIND_FILE := $(SOUND_REMIND_FTFS_BIN)
