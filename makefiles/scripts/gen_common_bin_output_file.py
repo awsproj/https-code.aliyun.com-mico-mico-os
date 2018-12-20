@@ -63,6 +63,10 @@ def main():
 
     input = input_file.read()
     gap_szie = OFFSET - os.path.getsize(OUTPUT_FILE)
+    
+    if gap_szie < 0:
+        print OUTPUT_FILE, "exceeds the offset!"
+        sys.exit(1)
 
     if gap_szie > 0:
         output_file.seek(os.path.getsize(OUTPUT_FILE))

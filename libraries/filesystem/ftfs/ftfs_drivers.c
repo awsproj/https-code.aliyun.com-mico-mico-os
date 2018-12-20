@@ -162,7 +162,8 @@ static struct fs * ftfs_file_init( struct ftfs_super *sb, mico_partition_t parti
 static OSStatus ftfs_mount( mico_block_device_t* device, mico_filesystem_t* fs_handle_out )
 {
     UNUSED_PARAMETER( device );
-    UNUSED_PARAMETER( fs_handle_out );
+
+    fs_handle_out->data.fs = ftfs_file_init( &(fs_handle_out->data.sb), fs_handle_out->partition );
     return MICO_FILESYSTEM_ERROR;
 }
 
@@ -178,15 +179,14 @@ static OSStatus ftfs_unmount( mico_filesystem_t* fs_handle )
 static OSStatus ftfs_file_open( mico_filesystem_t* fs_handle, mico_file_t* file_handle_out, const char* filename,
                                 mico_filesystem_open_mode_t mode )
 {
-
+    file * f;
     if ( mode != MICO_FILESYSTEM_OPEN_FOR_READ )
     {
         return MICO_FILESYSTEM_WRITE_PROTECTED;
     }
-    fs_handle->data.fs = ftfs_file_init( &(fs_handle->data.sb), fs_handle->partition );
-    fs_handle->data.f = ft_fopen( fs_handle->data.fs, filename, NULL );
-    file_handle_out->data.f = fs_handle->data.f;
-    if ( fs_handle->data.f == NULL )
+    f = ft_fopen( fs_handle->data.fs, filename, NULL );
+    file_handle_out->data.f = f;
+    if ( f == NULL )
     {
         return MICO_FILESYSTEM_ERROR;
     }
@@ -197,11 +197,15 @@ static OSStatus ftfs_file_open( mico_filesystem_t* fs_handle, mico_file_t* file_
 static OSStatus ftfs_file_get_details( mico_filesystem_t* fs_handle, const char* filename,
                                        mico_dir_entry_details_t* details_out )
 {
-    int file_size;
-    file_size = ((FT_FILE *) (fs_handle->data.f))->length;
-    if ( file_size < 0 )
-    {
-        return MICO_FILESYSTEM_ERROR;
+    int file_size=0;
+    file * f;
+    
+    f = ft_fopen( fs_handle->data.fs, filename, NULL );
+    if (f == NULL) {
+        file_size = 0;
+    } else {
+        file_size = ft_ftell( f );
+        ft_fclose(f);
     }
     details_out->size = (uint64_t) file_size;
     details_out->attributes_available = MICO_FALSE;
