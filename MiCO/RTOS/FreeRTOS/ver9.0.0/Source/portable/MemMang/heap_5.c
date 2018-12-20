@@ -525,3 +525,55 @@ const HeapRegion_t *pxHeapRegion;
 	xBlockAllocatedBit = ( ( size_t ) 1 ) << ( ( sizeof( size_t ) * heapBITS_PER_BYTE ) - 1 );
 }
 
+// add by yangsw@mxchip.com //
+#include <string.h>
+
+int vPortGetBlocks(void)
+{
+    int blocks = 1;
+    BlockLink_t *pxIterator;
+
+    pxIterator = &xStart;
+	/* Iterate through the list until a block is found that has a higher address
+	than the block being inserted. */
+	while(  pxIterator->pxNextFreeBlock)
+	{
+		blocks++;
+        pxIterator = pxIterator->pxNextFreeBlock;
+	}
+
+    return blocks;
+}
+
+void *pvPortRealloc( void *pv, size_t xWantedSize )
+{
+	uint8_t *puc = ( uint8_t * ) pv;
+	BlockLink_t *pxLink;
+	int datasize;
+	void *pvReturn = NULL;
+
+    if (xWantedSize == 0) {
+        vPortFree(pv);
+        return NULL;
+    }
+    
+	if (pv == NULL)
+		return pvPortMalloc(xWantedSize);
+	
+	/* The memory being freed will have an BlockLink_t structure immediately
+	before it. */
+	puc -= xHeapStructSize;
+	pxLink = ( BlockLink_t * ) puc;
+	datasize = (pxLink->xBlockSize & ~xBlockAllocatedBit) - xHeapStructSize;
+	if (datasize >= xWantedSize) // have enough memory don't need realloc
+		return pv;
+
+    pvReturn = pvPortMalloc(xWantedSize);
+    if (pvReturn == NULL) // malloc fail, return NULL, don't free pv.
+        return NULL;
+    
+    memcpy(pvReturn, pv, xWantedSize);
+    vPortFree(pv);// realloc success, copy and free pv.
+    
+    return pvReturn;
+}

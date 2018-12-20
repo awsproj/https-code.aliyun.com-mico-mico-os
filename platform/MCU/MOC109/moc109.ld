@@ -200,7 +200,7 @@ SECTIONS
 /* This symbol defines end of code/data sections. Heap starts here. */
         PROVIDE(end       = .);
         PROVIDE(_heap_start    	  = .);
-        PROVIDE(_heap_len      = 0x480000 -  _heap_start);
+        PROVIDE(_heap_len      = 0x440000 -  _heap_start);
         
 /* _stack symbol defines initial stack bottom addres. Stack grows to lower addresses.
    Typically you set this to be top of your RAM. Note: code never checks, if stack

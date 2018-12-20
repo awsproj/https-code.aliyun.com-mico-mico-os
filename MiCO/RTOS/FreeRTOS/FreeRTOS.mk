@@ -15,10 +15,14 @@ VERSION := 8.2.0
 $(NAME)_SOURCES := ver$(VERSION)/Source/portable/MemMang/heap_4.c
 else
 VERSION := 9.0.0
-ifneq ($(filter $(HOST_MCU_FAMILY),MOC108 MOC109),)
+ifneq ($(filter $(HOST_MCU_FAMILY),MOC108),)
 $(NAME)_SOURCES := ver$(VERSION)/Source/portable/MemMang/heap_4.c
 else
+ifneq ($(filter $(HOST_MCU_FAMILY),MOC109),)
+$(NAME)_SOURCES := ver$(VERSION)/Source/portable/MemMang/heap_5.c
+else
 $(NAME)_SOURCES := ver$(VERSION)/Source/portable/MemMang/heap_3.c
+endif
 endif
 endif
 

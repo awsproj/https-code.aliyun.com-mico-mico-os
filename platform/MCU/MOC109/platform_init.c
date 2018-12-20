@@ -82,6 +82,22 @@ mico_mutex_t stdio_rx_mutex;
 mico_mutex_t stdio_tx_mutex;
 #endif /* #ifndef MICO_DISABLE_STDIO */
 
+extern void         *_heap_start;
+extern void         *_heap_end;
+extern void         *_heap_len;
+
+typedef struct HeapRegion
+{
+    uint8_t *pucStartAddress;
+    size_t xSizeInBytes;
+} HeapRegion_t;
+
+HeapRegion_t xHeapRegions[] =
+{
+    {(uint8_t *)&_heap_start, (size_t)&_heap_len},
+    {(uint8_t *)0x00900000, 0x40000},
+    {NULL, 0}
+};
 /******************************************************
 *               Function Definitions
 ******************************************************/
@@ -112,7 +128,15 @@ void mico_main(void)
 
 void _main(void)
 {
+    vPortDefineHeapRegions(xHeapRegions);
+    
     driver_init();
     intc_init();
+
     main();
+}
+
+int heap_total_size(void)
+{
+	return (int)&_heap_len + 0x40000;
 }
