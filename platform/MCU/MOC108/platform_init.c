@@ -27,6 +27,7 @@
 #include "platform_init.h"
 
 #include "portmacro.h"
+#include "mico_config.h"
 
 #ifdef __GNUC__
 #include "../../GCC/stdio_newlib.h"
