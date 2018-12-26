@@ -28,15 +28,6 @@
 
 #include "portmacro.h"
 
-typedef unsigned char   UINT8;
-typedef unsigned short  UINT16;
-typedef unsigned long   UINT32;
-typedef unsigned long long int UINT64;
-typedef signed   long   INT32;
-typedef signed   char   INT8;
-typedef signed   short  INT16;
-
-#include "../icu/icu.h"
 #ifdef __GNUC__
 #include "../../GCC/stdio_newlib.h"
 #endif /* ifdef __GNUC__ */
@@ -198,8 +189,11 @@ uint32_t mico_get_time_no_os(void)
 }
 #endif
 
-#define REG_READ(addr)          (*((volatile UINT32 *)(addr)))
-#define REG_WRITE(addr, _data) 	(*((volatile UINT32 *)(addr)) = (_data))
+#define REG_READ(addr)          (*((volatile uint32_t *)(addr)))
+#define REG_WRITE(addr, _data) 	(*((volatile uint32_t *)(addr)) = (_data))
+#define ICU_BASE                                     (0x00802000)
+#define ICU_INTERRUPT_ENABLE                         (ICU_BASE + 16 * 4)
+#define ICU_GLOBAL_INT_EN                            (ICU_BASE + 17 * 4)
 
 void soft_reset(void)
 {
