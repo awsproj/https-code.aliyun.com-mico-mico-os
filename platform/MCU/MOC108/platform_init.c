@@ -28,6 +28,15 @@
 
 #include "portmacro.h"
 
+typedef unsigned char   UINT8;
+typedef unsigned short  UINT16;
+typedef unsigned long   UINT32;
+typedef unsigned long long int UINT64;
+typedef signed   long   INT32;
+typedef signed   char   INT8;
+typedef signed   short  INT16;
+
+#include "../icu/icu.h"
 #ifdef __GNUC__
 #include "../../GCC/stdio_newlib.h"
 #endif /* ifdef __GNUC__ */
@@ -40,6 +49,7 @@
 /******************************************************
 *                    Constants
 ******************************************************/
+void soft_reset(void);
 
 #ifndef STDIO_BUFFER_SIZE
 #define STDIO_BUFFER_SIZE   1024
@@ -107,10 +117,14 @@ void startApplication( uint32_t app_addr )
 
 void platform_mcu_reset( void )
 {
+#ifdef USE_SOFT_RESET
+    soft_reset();
+#else
     mico_rtos_enter_critical();
     if(!platform_is_in_interrupt_context())
         MicoWdgInitialize(1);
     for(;;);
+#endif
 }
 
 /* STM32F2 common clock initialisation function
@@ -184,4 +198,22 @@ uint32_t mico_get_time_no_os(void)
 }
 #endif
 
+#define REG_READ(addr)          (*((volatile UINT32 *)(addr)))
+#define REG_WRITE(addr, _data) 	(*((volatile UINT32 *)(addr)) = (_data))
+
+void soft_reset(void)
+{
+    MicoWdgFinalize();
+    
+    // power off wifi
+    bk_wlan_suspend();
+    rw_msg_send_reset();
+    
+    REG_WRITE(ICU_INTERRUPT_ENABLE, 0); // disable all interrupt
+    REG_WRITE(ICU_GLOBAL_INT_EN, 0); // disable IRQ/FIQ...
+
+    REG_WRITE(0x400018, 0xAAAAAAAA); // clear user flag
+
+    __jump_to(0);// reboot
+}
 
