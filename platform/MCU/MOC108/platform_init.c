@@ -198,6 +198,7 @@ uint32_t mico_get_time_no_os(void)
 
 void soft_reset(void)
 {
+    printf("~~~~~~~~~~~~~~~soft_reset\r\n");
     MicoWdgFinalize();
     
     // power off wifi
