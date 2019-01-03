@@ -55,7 +55,6 @@ extern "C"
 
 typedef enum
 {
-    MICO_GPIO_0,
     MICO_GPIO_1,
     MICO_GPIO_2,
     MICO_GPIO_3,
@@ -73,10 +72,6 @@ typedef enum
     MICO_GPIO_15,
     MICO_GPIO_16,
     MICO_GPIO_17,
-    MICO_GPIO_18,
-    MICO_GPIO_19,
-    MICO_GPIO_20,
-    MICO_GPIO_21,
     MICO_GPIO_22,
     MICO_GPIO_23,
     MICO_GPIO_24,
@@ -85,8 +80,12 @@ typedef enum
     MICO_GPIO_27,
     MICO_GPIO_28,
     MICO_GPIO_29,
-    MICO_GPIO_30,
-    MICO_GPIO_31,
+    MICO_GPIO_45,
+    MICO_GPIO_46,
+    MICO_GPIO_47,
+    MICO_GPIO_48,
+    MICO_GPIO_65,
+    MICO_GPIO_66,
     MICO_GPIO_MAX, /* Denotes the total number of GPIO port aliases. Not a valid GPIO alias */
     MICO_GPIO_NONE,
     MICO_SYS_LED = MICO_GPIO_NONE, 

@@ -60,42 +60,6 @@
 *               Variables Definitions
 ******************************************************/
 
-const platform_gpio_t platform_gpio_pins[] =
-    {
-        [MICO_GPIO_0] = {0},
-        [MICO_GPIO_1] = {1},
-        [MICO_GPIO_2] = {2},
-        [MICO_GPIO_3] = {3},
-        [MICO_GPIO_4] = {4},
-        [MICO_GPIO_5] = {5},
-        [MICO_GPIO_6] = {6},
-        [MICO_GPIO_7] = {7},
-        [MICO_GPIO_8] = {8},
-        [MICO_GPIO_9] = {9},
-        [MICO_GPIO_10] = {10},
-        [MICO_GPIO_11] = {11},
-        [MICO_GPIO_12] = {12},
-        [MICO_GPIO_13] = {13},
-        [MICO_GPIO_14] = {14},
-        [MICO_GPIO_15] = {15},
-        [MICO_GPIO_16] = {16},
-        [MICO_GPIO_17] = {17},
-        [MICO_GPIO_18] = {18},
-        [MICO_GPIO_19] = {19},
-        [MICO_GPIO_20] = {20},
-        [MICO_GPIO_21] = {21},
-        [MICO_GPIO_22] = {22},
-        [MICO_GPIO_23] = {23},
-        [MICO_GPIO_24] = {24},
-        [MICO_GPIO_25] = {25},
-        [MICO_GPIO_26] = {26},
-        [MICO_GPIO_27] = {27},
-        [MICO_GPIO_28] = {28},
-        [MICO_GPIO_29] = {29},
-        [MICO_GPIO_30] = {30},
-        [MICO_GPIO_31] = {31},
-};
-
 const platform_pwm_t platform_pwm_peripherals[] = {};
 
 const platform_i2c_t platform_i2c_peripherals[] = {};
