@@ -37,6 +37,9 @@
 #include "debug.h"
 
 #include "SecurityUtils.h"
+
+typedef uint8_t         Boolean;
+
 #define AES_UTILS_USE_MICO_AES 1
 
 #if( !defined( AES_UTILS_HAS_GLADMAN_GCM ) )

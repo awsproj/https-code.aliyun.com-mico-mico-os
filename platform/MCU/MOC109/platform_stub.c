@@ -89,11 +89,15 @@ void *__wrap__realloc_r(void *p, void *x, size_t sz)
     return __wrap_realloc(x, sz);
 }
 
+extern void*        stdio_tx_mutex;
 int __wrap_printf(const char *format, ...)
 {
     int size;
     va_list ap;
     static char print_buf[1024];
+
+    if (stdio_tx_mutex == NULL)
+        return 0;
 
     va_start(ap, format);
     size = vsnprintf(print_buf, sizeof(print_buf) - 1, format, ap);

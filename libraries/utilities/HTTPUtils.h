@@ -40,6 +40,8 @@
 #include "URLUtils.h"
 #include "stdbool.h"
 
+typedef uint8_t         Boolean;
+
 #define kHTTPPostMethod     "POST"
 
       // Status-Code    =

@@ -116,6 +116,16 @@ void mico_main(void)
 {
     /* Customized board configuration. */
     init_platform();
+}
+
+void _main(void)
+{
+    vPortDefineHeapRegions(xHeapRegions);
+    /* step 1: driver layer initialization*/
+    driver_init();
+
+    /* step 2: function layer initialization*/
+    func_init();  
 
 #ifndef MICO_DISABLE_STDIO
     if (stdio_tx_mutex == NULL)
@@ -124,14 +134,7 @@ void mico_main(void)
     ring_buffer_init((ring_buffer_t *)&stdio_rx_buffer, (uint8_t *)stdio_rx_data, STDIO_BUFFER_SIZE);
     platform_uart_init(&platform_uart_drivers[STDIO_UART], &platform_uart_peripherals[STDIO_UART], &stdio_uart_config, (ring_buffer_t *)&stdio_rx_buffer);
 #endif
-}
-
-void _main(void)
-{
-    vPortDefineHeapRegions(xHeapRegions);
-    
-    driver_init();
-    intc_init();
+    app_start();
 
     main();
 }
@@ -140,3 +143,5 @@ int heap_total_size(void)
 {
 	return (int)&_heap_len + 0x40000;
 }
+
+
