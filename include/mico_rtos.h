@@ -76,6 +76,8 @@ typedef void * mico_mutex_t;
 typedef void * mico_thread_t;
 typedef void * mico_queue_t;
 typedef void * mico_event_t;// MICO OS event: mico_semaphore_t, mico_mutex_t or mico_queue_t
+typedef void * mico_event_group_t;
+
 typedef void (*timer_handler_t)( void* arg );
 typedef OSStatus (*event_handler_t)( void* arg );
 

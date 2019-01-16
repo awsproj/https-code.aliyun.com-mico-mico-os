@@ -54,7 +54,7 @@
 /* Split memory into area for vectors and ram */
 MEMORY
 {
-	flash  (rx) : ORIGIN = 0x0012000, LENGTH = 892k
+	flash  (rx) : ORIGIN = 0x0012000, LENGTH = 1152k
 	ram   (rwx): ORIGIN = 0x00400020, LENGTH = 256k - 32
 }
 
@@ -168,6 +168,13 @@ SECTIONS
 		_ebss = .;
 	} > ram						/* in RAM */
 
+	.ARM.exidx : {
+    __exidx_start = .;
+     *(.ARM.exidx* .gnu.linkonce.armexidx.*)
+    __exidx_end = .;
+  } >flash
+  _etext = .; 
+  
 	. = ALIGN (8);
 	_empty_ram = .;
 

@@ -67,7 +67,7 @@ void progressbar_init(uint32_t value)
 
 void progressbar_update(uint32_t value)
 {
-    static uint32_t i = 0;
+    static uint32_t animated_marker_idx = 0;
     uint32_t now_time;
     static uint32_t remain_time = 0;
     uint32_t marker_width, fill_width;
@@ -100,7 +100,7 @@ void progressbar_update(uint32_t value)
     p += marker_width;
     memset(p, FILL, fill_width);
     p += fill_width;
-    p += sprintf(p, " %c", ANIMATED_MARKER[i = ++i > 3 ? 0 : i]);
+    p += sprintf(p, " %c", ANIMATED_MARKER[animated_marker_idx++ % 4]);
     p += sprintf(p, " %3d%%", (int)value * 100 / (int)max_value);
     p += sprintf(p, " %4d KiB", (int)value / 1024);
     p += sprintf(p, " %5.1f KiB/s", speed / 1024.0);

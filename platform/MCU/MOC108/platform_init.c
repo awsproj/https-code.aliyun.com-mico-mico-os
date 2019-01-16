@@ -27,6 +27,7 @@
 #include "platform_init.h"
 
 #include "portmacro.h"
+#include "mico_config.h"
 
 #ifdef __GNUC__
 #include "../../GCC/stdio_newlib.h"
@@ -40,6 +41,7 @@
 /******************************************************
 *                    Constants
 ******************************************************/
+void soft_reset(void);
 
 #ifndef STDIO_BUFFER_SIZE
 #define STDIO_BUFFER_SIZE   1024
@@ -107,10 +109,14 @@ void startApplication( uint32_t app_addr )
 
 void platform_mcu_reset( void )
 {
+#ifdef USE_SOFT_RESET
+    soft_reset();
+#else
     mico_rtos_enter_critical();
     if(!platform_is_in_interrupt_context())
         MicoWdgInitialize(1);
     for(;;);
+#endif
 }
 
 /* STM32F2 common clock initialisation function
@@ -184,4 +190,26 @@ uint32_t mico_get_time_no_os(void)
 }
 #endif
 
+#define REG_READ(addr)          (*((volatile uint32_t *)(addr)))
+#define REG_WRITE(addr, _data) 	(*((volatile uint32_t *)(addr)) = (_data))
+#define ICU_BASE                                     (0x00802000)
+#define ICU_INTERRUPT_ENABLE                         (ICU_BASE + 16 * 4)
+#define ICU_GLOBAL_INT_EN                            (ICU_BASE + 17 * 4)
+
+void soft_reset(void)
+{
+    printf("~~~~~~~~~~~~~~~soft_reset\r\n");
+    MicoWdgFinalize();
+    
+    // power off wifi
+    bk_wlan_suspend();
+    rw_msg_send_reset();
+    
+    REG_WRITE(ICU_INTERRUPT_ENABLE, 0); // disable all interrupt
+    REG_WRITE(ICU_GLOBAL_INT_EN, 0); // disable IRQ/FIQ...
+
+    REG_WRITE(0x400018, 0xAAAAAAAA); // clear user flag
+
+    __jump_to(0);// reboot
+}
 

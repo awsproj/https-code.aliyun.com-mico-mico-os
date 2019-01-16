@@ -7,7 +7,7 @@
 #  permission of MXCHIP Corporation.
 #
 
-.PHONY: bootloader download_bootloader total download_dct download kill_openocd
+.PHONY: bootloader download_bootloader total download_dct download kill_openocd EXT_IMAGES_DOWNLOAD_DEP
 
 EXTRA_PRE_BUILD_TARGETS  += bootloader
 EXTRA_POST_BUILD_TARGETS += copy_output_for_eclipse
@@ -98,20 +98,6 @@ endif
 
 total:
 	@:
-
-download_app: $(STRIPPED_LINK_OUTPUT_FILE) display_map_summary download_bootloader sflash_write_app kill_openocd
-	$(eval IMAGE_SIZE := $(shell $(PYTHON) $(IMAGE_SIZE_SCRIPT) $(BIN_OUTPUT_FILE)))
-	$(QUIET)$(ECHO) Downloading application to partition: $(APPLICATION_FIRMWARE_PARTITION_TCL) size: $(IMAGE_SIZE) bytes... 
-	$(PYTHON) mico-os/sub_build/spi_flash_write_progressbar/sflash_write_moc108.py -o $(OPENOCD_FULL_NAME) -f $(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.ota$(BIN_OUTPUT_SUFFIX)) -a 0x13200
-
-ifeq (download,$(filter download,$(MAKECMDGOALS)))
-EXT_IMAGES_DOWNLOAD_DEP := download_app
-endif
-
-download: download_app $(if $(findstring total,$(MAKECMDGOALS)), EXT_IMAGE_DOWNLOAD,)
-
-kill_openocd:
-	$(KILL_OPENOCD)
 
 $(if $(RTOS),,$(error No RTOS specified. Options are: $(notdir $(wildcard MiCO/RTOS/*))))
 
