@@ -147,6 +147,30 @@ const mico_logic_partition_t mico_partitions[] =
                 .partition_length = 0x2000, //8k bytes
                 .partition_options = PAR_OPT_READ_EN | PAR_OPT_WRITE_DIS,
             },
+        [MICO_PARTITION_KV] =
+        {
+            .partition_owner           = MICO_FLASH_EMBEDDED,
+            .partition_description     = "KV",
+            .partition_start_addr      = 0x1FB000,
+            .partition_length          = 0x4000, //16k bytes
+            .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+        },
+        [MICO_PARTITION_FILESYS] =
+        {
+            .partition_owner           = MICO_FLASH_NONE,
+            .partition_description     = "File system",
+            .partition_start_addr      = 0x200000,
+            .partition_length          = 0x9F000, //636K bytes
+            .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+        },
+        [MICO_PARTITION_AUDIO] =
+        {
+            .partition_owner           = MICO_FLASH_NONE,
+            .partition_description     = "File system",
+            .partition_start_addr      = 0x29F000,
+            .partition_length          = 0x161000, //1412K bytes
+            .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+        },
 };
 
 const platform_adc_t platform_adc_peripherals[] = {};

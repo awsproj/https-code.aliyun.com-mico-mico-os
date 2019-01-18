@@ -72,6 +72,10 @@ typedef enum
     MICO_GPIO_15,
     MICO_GPIO_16,
     MICO_GPIO_17,
+    MICO_GPIO_18,
+    MICO_GPIO_19,
+    MICO_GPIO_20,
+    MICO_GPIO_21,
     MICO_GPIO_22,
     MICO_GPIO_23,
     MICO_GPIO_24,
@@ -152,6 +156,9 @@ typedef enum
   MICO_PARTITION_SYSTEM_DATA,
   MICO_PARTITION_PARAMETER_3,
   MICO_PARTITION_PARAMETER_4,
+  MICO_PARTITION_KV,
+  MICO_PARTITION_FILESYS,
+  MICO_PARTITION_AUDIO,
   MICO_PARTITION_USER_MAX
 } mico_user_partition_t;
 
@@ -177,6 +184,36 @@ typedef enum
 #define MICO_I2C_CP         (MICO_I2C_NONE)
 #endif //USE_MiCOKit_EXT
 
+#define VBS_FLASH_ERGE_NUM      (2)
+#define VBS_FLASH_GUSHI_NUM     (2)
+#define VBS_FLASH_GUOXUE_NUM    (2)
+#define VBS_FLASH_YINGYU_NUM    (2)
+
+// target device of VBS7105 to build
+#define VBS7105_HW_V0_1		    (1)
+#define VBS7105_HW_V0_2		    (2)
+#define VBS7105_HW_ZS_QQ_V1_0	(3)
+#define VBS7105_HW_ZS_XX_V0_2	(4)
+// target board name & version
+#if (VBS7105_HW_VER == VBS7105_HW_V0_1)
+    #define VBS7105_HW_NAME ("HB_MX_V0_1")
+    #define VBS7105_VOLUME_ADC_ENALBE
+#elif (VBS7105_HW_VER == VBS7105_HW_V0_2)
+    #define VBS7105_HW_NAME ("HB_MX_V0_2")
+    #define VBS7105_VOLUME_ADC_ENALBE
+#elif (VBS7105_HW_VER == VBS7105_HW_ZS_QQ_V1_0)
+    #define VBS7105_HW_NAME ("ZS_QQ_V1_0")
+    //#define VBS7105_VOLUME_ADC_ENALBE
+    //#define VBS_VOLUME_PERSISTENCE
+#elif (VBS7105_HW_VER == VBS7105_HW_ZS_XX_V0_2)
+    #define VBS7105_HW_NAME ("ZS_XX_V0_2")
+    //#define VBS7105_VOLUME_ADC_ENALBE
+    //#define VBS_VOLUME_PERSISTENCE
+#else
+    #define VBS7105_HW_NAME ("UNKNOWN")
+#endif
+
+#define VBS7105_BIN_FACTORY   (1)  // build final release bin for factory
 
 #ifdef __cplusplus
 } /*extern "C" */

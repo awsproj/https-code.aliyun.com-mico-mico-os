@@ -24,7 +24,7 @@ GLOBAL_INCLUDES += \
 ../../$(HOST_ARCH)
 
 # Global flags
-GLOBAL_CFLAGS   += $$(CPU_CFLAGS) -fno-builtin-printf -Wno-implicit-function-declaration -Wno-int-conversion -Wno-unused-variable -Wno-unused-function
+GLOBAL_CFLAGS   += $$(CPU_CFLAGS) -fno-builtin-printf -Wno-implicit-function-declaration -Wno-int-conversion -Wno-unused-variable -Wno-unused-function -Wno-format
 GLOBAL_CXXFLAGS += $$(CPU_CXXFLAGS)
 GLOBAL_ASMFLAGS += $$(CPU_ASMFLAGS)
 GLOBAL_LDFLAGS  += $$(CPU_LDFLAGS)
