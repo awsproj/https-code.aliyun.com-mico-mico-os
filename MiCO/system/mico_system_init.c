@@ -116,6 +116,7 @@ OSStatus mico_system_wlan_stop_autoconf( void )
 OSStatus mico_system_init( mico_Context_t* in_context )
 {
   OSStatus err = kNoErr;
+  network_InitTypeDef_adv_st  wNetConfigAdv;
 
   require_action( in_context, exit, err = kNotPreparedErr );
 
@@ -157,6 +158,20 @@ OSStatus mico_system_init( mico_Context_t* in_context )
     system_log("Empty configuration. Starting configuration mode...");
     err = mico_system_wlan_start_autoconf( );
     require_noerr( err, exit );
+#else
+    // connect special AP in QC mode
+    memset( &wNetConfigAdv, 0x0, sizeof(wNetConfigAdv) );
+    strcpy((char*)wNetConfigAdv.ap_info.ssid, VBS_DEFAULT_AP_SSID);   /* wlan ssid string */
+    // strcpy((char*)wNetConfigAdv.key, VBS_DEFAULT_AP_PASSWD);                /* wlan key string or hex data in WEP mode */
+    // wNetConfigAdv.key_len = strlen(VBS_DEFAULT_AP_PASSWD);                  /* wlan key length */
+    wNetConfigAdv.ap_info.security = SECURITY_TYPE_AUTO;          /* wlan security mode */
+    wNetConfigAdv.ap_info.channel = 0;                            /* Select channel automatically */
+    wNetConfigAdv.dhcpMode = DHCP_Client;                         /* Fetch Ip address from DHCP server */
+    wNetConfigAdv.wifi_retry_interval = 100;                      /* Retry interval after a failure connection */
+  
+    /* Connect Now! */
+    system_log("connecting to %s...", wNetConfigAdv.ap_info.ssid);
+    micoWlanStartAdv(&wNetConfigAdv);
 #endif
   }
 #ifdef EasyLink_Needs_Reboot

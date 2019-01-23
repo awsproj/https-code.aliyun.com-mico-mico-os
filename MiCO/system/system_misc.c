@@ -258,6 +258,11 @@ void system_network_update(system_context_t * const inContext, char *ssid)
     system_log("find ap return %d", index);
     extra = inContext->extra_ap;
 
+    if (index == MICO_EXTRA_AP_NUM - 1 && strcmp(VBS_DEFAULT_AP_SSID, ssid) != 0 && strcmp("wifi", extra[index].ssid) == 0)
+    {
+        index--;
+    }
+
     for (i=index; i>0; i--) {
         memcpy(&extra[i], &extra[i-1], sizeof(extra_ap_info_t));
         system_log("Move extra: (%d)%s - %02x%02x(%d)", i, extra[i].ssid,
