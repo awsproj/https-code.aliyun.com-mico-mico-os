@@ -144,6 +144,29 @@ exit:
   return;
 }
 
+// set default wifi:  ssid=<wifi>, no passwd
+OSStatus system_wifi_set_default_ssid_nopasswd(char* ssid, system_context_t * const inContext)
+{
+  system_log_trace();
+  OSStatus err = kGeneralErr;
+
+  require(inContext && ssid && strlen(ssid) <= maxSsidLen, exit);
+
+  mico_rtos_lock_mutex(&inContext->flashContentInRam_mutex);
+
+  strncpy(inContext->flashContentInRam.micoSystemConfig.ssid, ssid, maxSsidLen);
+  memset(inContext->flashContentInRam.micoSystemConfig.bssid, 0, 6);
+  memset(inContext->flashContentInRam.micoSystemConfig.key, 0, maxKeyLen);
+  inContext->flashContentInRam.micoSystemConfig.keyLength = 64;
+  
+  err = mico_system_context_update( &inContext->flashContentInRam );
+
+  mico_rtos_unlock_mutex(&inContext->flashContentInRam_mutex);
+  
+exit:
+  return err;
+}
+
 OSStatus system_notification_init( system_context_t * const inContext )
 {
   OSStatus err = kNoErr;
