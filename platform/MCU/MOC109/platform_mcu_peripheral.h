@@ -40,6 +40,20 @@ typedef enum
 	MX_UART_NONE,
 } mx_uart_t;
 
+typedef enum
+{
+    MX_ADC_1 = 1,
+    MX_ADC_2,
+    MX_ADC_3,
+    MX_ADC_4,
+    MX_ADC_5,
+    MX_ADC_6,
+    MX_ADC_7,
+    MX_ADC_MAX, /* Denotes the total number of UART port aliases. Not a valid UART alias */
+    MX_ADC_NONE,
+} mx_adc_t;
+
+
 /******************************************************
  *                    Structures
  ******************************************************/
@@ -50,7 +64,7 @@ typedef struct
 
 typedef struct
 {
-    uint8_t unimplemented;
+    mx_adc_t channel;
 } platform_adc_t;
 
 typedef struct
