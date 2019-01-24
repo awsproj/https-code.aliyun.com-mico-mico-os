@@ -574,7 +574,6 @@ static const struct cli_command built_ins[] = {
   {"echo", NULL, echo_cmd_handler},
   {"exit", "CLI exit", cli_exit_handler}, 
   
-#ifndef MICO_TODO
 #ifndef PPP_IF
   // WIFI
   {"scan", "scan ap", wifiscan_Command}, 
@@ -584,9 +583,7 @@ static const struct cli_command built_ins[] = {
   {"awsdebug", "enable aws debug info", aws_handler}, 
 #endif
 #endif
-#endif
 
-#ifndef MICO_TODO
   // network
   {"ifconfig", "Show IP address", ifconfig_Command}, 
 #ifndef PPP_IF
@@ -595,7 +592,6 @@ static const struct cli_command built_ins[] = {
   {"ping", "ping <ip>", ping_Command}, 
   {"dns", "show/clean/<domain>", dns_Command}, 
   {"sockshow", "Show all sockets", socket_show_Command}, 
-#endif
   // os
   {"tasklist", "list all thread name status", task_Command}, 
   
