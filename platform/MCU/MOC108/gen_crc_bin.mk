@@ -3,7 +3,7 @@ EXTRA_POST_BUILD_TARGETS += $(MICO_ALL_BIN_OUTPUT_FILE)
 ifeq ($(HOST_OS),Win32)
 CRC := "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/tools/crc/win/crc.exe"
 XZ 		:= "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/tools/xz/win/xz.exe"
-BK3266CRC := "$(SOURCE_ROOT)/bk3266ota/bk3266br/tools/crc32_win"
+BK3266CRC := "$(SOURCE_ROOT)/bk3266ota/bk3266br/tools/crc32.exe"
 else  # Win32
 ifeq ($(HOST_OS),Linux32)
 CRC := "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/tools/crc/linux/crc"
