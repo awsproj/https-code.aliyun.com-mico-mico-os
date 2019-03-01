@@ -3,22 +3,18 @@ EXTRA_POST_BUILD_TARGETS += $(MICO_ALL_BIN_OUTPUT_FILE)
 ifeq ($(HOST_OS),Win32)
 CRC := "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/tools/crc/win/crc.exe"
 XZ 		:= "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/tools/xz/win/xz.exe"
-BK3266CRC := "$(SOURCE_ROOT)/bk3266ota/bk3266br/tools/crc32.exe"
 else  # Win32
 ifeq ($(HOST_OS),Linux32)
 CRC := "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/tools/crc/linux/crc"
 XZ 		:= "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/tools/xz/linux/xz"
-BK3266CRC := "$(SOURCE_ROOT)/bk3266ota/bk3266br/tools/crc32_linux"
 else # Linux32
 ifeq ($(HOST_OS),Linux64)
 CRC := "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/tools/crc/linux/crc"
 XZ 		:= "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/tools/xz/linux/xz"
-BK3266CRC := "$(SOURCE_ROOT)/bk3266ota/bk3266br/tools/crc32_linux"
 else # Linux64
 ifeq ($(HOST_OS),OSX)
 CRC := "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/tools/crc/osx/crc"
 XZ 		:= "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/tools/xz/osx/xz"
-BK3266CRC := "$(SOURCE_ROOT)/bk3266ota/bk3266br/tools/crc32_osx"
 else # OSX
 $(error not surport for $(HOST_OS))
 endif # OSX
@@ -88,7 +84,8 @@ BK3266_OTA_OFFSET := 0x145000
 
 BK3266_OTA_HDR_FILE := build/$(CLEANED_BUILD_STRING)/resources/$(BK3266_RAW_FILE_NAME:.bin=.otahdr.bin)
 BK3266_OTA_HDR_OFFSET := 0x12000
-BK3266_OTA_HDR_SCRIPT := bk3266ota/tools/bk3266otahdr.py
+BK3266CRC := $(BK3266CRC_FILE)
+BK3266_OTA_HDR_SCRIPT := $(BK3266_OTA_HDR_SCRIPT_FILE)
 
 $(BK3266_RAW_FILE): build_done
 
