@@ -158,6 +158,7 @@ OSStatus system_wifi_set_default_ssid_nopasswd(char* ssid, system_context_t * co
   memset(inContext->flashContentInRam.micoSystemConfig.bssid, 0, 6);
   memset(inContext->flashContentInRam.micoSystemConfig.key, 0, maxKeyLen);
   inContext->flashContentInRam.micoSystemConfig.keyLength = 64;
+  inContext->flashContentInRam.micoSystemConfig.dhcpEnable = true;
   
   err = mico_system_context_update( &inContext->flashContentInRam );
 
