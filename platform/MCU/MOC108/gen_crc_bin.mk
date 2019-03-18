@@ -37,7 +37,7 @@ RAW_BIN_OUTPUT_FILE := $(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.raw$(BIN_OUTPUT
 ifneq (,$(filter MK5060,$(PLATFORM)))
 BOOT_BIN_FILE := $(MICO_OS_PATH)/resources/moc_kernel/$(MODULE)/boot_qc.bin
 else
-ifeq ($(target), jd10)
+ifneq (,$(filter jd10 jd10-mx,$(target)))
 BOOT_BIN_FILE := $(MICO_OS_PATH)/resources/moc_kernel/$(MODULE)/boot_jd.bin
 else
 BOOT_BIN_FILE := $(MICO_OS_PATH)/resources/moc_kernel/$(MODULE)/boot_zs.bin
