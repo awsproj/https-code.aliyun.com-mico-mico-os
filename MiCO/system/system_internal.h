@@ -92,7 +92,7 @@ void system_network_add(system_context_t * const inContext);
 #endif
 
 OSStatus system_wifi_set_default_ssid_nopasswd(char* ssid, system_context_t * const inContext);
-
+OSStatus system_wifi_set_default_ap(char* ssid, char* passwd, system_context_t * const inContext);
 
 #ifdef __cplusplus
 } /*extern "C" */

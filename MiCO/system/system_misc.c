@@ -168,6 +168,36 @@ exit:
   return err;
 }
 
+// set default wifi:  ssid=<wifi>, passwd=<88888888>
+OSStatus system_wifi_set_default_ap(char* ssid, char* passwd, system_context_t * const inContext)
+{
+  system_log_trace();
+  OSStatus err = kGeneralErr;
+
+  require(inContext && ssid && strlen(ssid) <= maxSsidLen, exit);
+
+  mico_rtos_lock_mutex(&inContext->flashContentInRam_mutex);
+
+  strncpy(inContext->flashContentInRam.micoSystemConfig.ssid, ssid, maxSsidLen);
+  strncpy(inContext->flashContentInRam.micoSystemConfig.user_key, passwd, maxKeyLen);
+  inContext->flashContentInRam.micoSystemConfig.user_keyLength = strlen(passwd);
+
+  system_log("set default wifi %s:%s", inContext->flashContentInRam.micoSystemConfig.ssid,
+          inContext->flashContentInRam.micoSystemConfig.user_key);
+
+  memset(inContext->flashContentInRam.micoSystemConfig.bssid, 0, 6);
+  memset(inContext->flashContentInRam.micoSystemConfig.key, 0, maxKeyLen);
+  inContext->flashContentInRam.micoSystemConfig.keyLength = 64;
+  inContext->flashContentInRam.micoSystemConfig.dhcpEnable = true;
+  
+  err = mico_system_context_update( &inContext->flashContentInRam );
+
+  mico_rtos_unlock_mutex(&inContext->flashContentInRam_mutex);
+  
+exit:
+  return err;
+}
+
 OSStatus system_notification_init( system_context_t * const inContext )
 {
   OSStatus err = kNoErr;

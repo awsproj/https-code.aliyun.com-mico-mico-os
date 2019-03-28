@@ -160,7 +160,8 @@ OSStatus mico_system_init( mico_Context_t* in_context )
     require_noerr( err, exit );
 #else
     // set default wifi
-    err = system_wifi_set_default_ssid_nopasswd(VBS_DEFAULT_AP_SSID, sys_context);
+    //err = system_wifi_set_default_ssid_nopasswd(VBS_DEFAULT_AP_SSID, sys_context);
+    err = system_wifi_set_default_ap(VBS_DEFAULT_AP_SSID, VBS_DEFAULT_AP_PASSWD, sys_context);
     require_noerr( err, exit );
     system_connect_wifi_normal(sys_context);
 #endif
