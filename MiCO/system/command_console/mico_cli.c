@@ -15,8 +15,17 @@
 #include "platform_config.h"
 #include "tftp_ota/tftp.h"
 
+#define CFG_SUPPORT_BKREG 1
 
 #ifdef MICO_CLI_ENABLE
+
+#if CFG_SUPPORT_BKREG
+#define BKREG_MAGIC_WORD0                 (0x01)
+#define BKREG_MAGIC_WORD1                 (0xE0)
+#define BKREG_MAGIC_WORD2                 (0xFC)
+#define BKREG_MIN_LEN                     3
+#endif
+
 //int cli_printf(const char *msg, ...);
 //int cli_putstr(const char *msg);
 //int cli_getchar(char *inbuf);
@@ -310,6 +319,27 @@ static int get_input(char *inbuf, unsigned int *bp)
       cli_printf("%c", inbuf[*bp]);
     
     (*bp)++;
+    
+#if CFG_SUPPORT_BKREG
+        if (*bp >= 3) {
+            if(((char)BKREG_MAGIC_WORD0 == inbuf[0])
+                && ((char)BKREG_MAGIC_WORD1 == inbuf[1])
+                && ((char)BKREG_MAGIC_WORD2 == inbuf[2]))
+            {
+                int len;
+                
+                mico_rtos_thread_msleep(100);
+                len = MicoUartGetLengthInBuffer(CLI_UART);
+                if (len <= 0)
+                    return 0;
+                MicoUartRecv(CLI_UART, &inbuf[*bp], len, MICO_WAIT_FOREVER);
+                bkreg_run_command(inbuf, len+*bp);
+                cli_printf(PROMPT);
+                *bp = 0;
+                return 0;
+            }
+        }
+#endif
     if (*bp >= INBUF_SIZE) {
       cli_printf("Error: input buffer overflow\r\n");
       cli_printf(PROMPT);
