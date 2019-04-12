@@ -15,6 +15,7 @@ PATH :=
 
 JTAG         ?= jlink_swd
 
+DATE := date
 
 ifeq ($(HOST_OS),Win32)
 ################
@@ -24,6 +25,7 @@ COMMON_TOOLS_PATH := $(TOOLS_ROOT)/cmd/Win32/
 export SHELL       = cmd.exe
 EXECUTABLE_SUFFIX  := .exe
 OPENOCD_FULL_NAME := $(OPENOCD_PATH)Win32/openocd_mico.exe
+DATE 			  := "$(COMMON_TOOLS_PATH)$(DATE)$(EXECUTABLE_SUFFIX)"
 
 # Python
 ifneq ($(wildcard C:\Python34\python.exe),)
@@ -176,6 +178,7 @@ COMMON_TOOLS_PATH := $(TOOLS_ROOT)/cmd/OSX/
 export SHELL       = $(COMMON_TOOLS_PATH)dash
 EXECUTABLE_SUFFIX  :=
 OPENOCD_FULL_NAME := "$(OPENOCD_PATH)OSX/openocd_mico"
+DATE 			  := $(COMMON_TOOLS_PATH)$(DATE)
 SLASH_QUOTE_START :=\"
 SLASH_QUOTE_END   :=\"
 ESC_QUOTE         :=\"
@@ -224,7 +227,6 @@ CP      := "$(COMMON_TOOLS_PATH)cp$(EXECUTABLE_SUFFIX)" -f
 MV      := "$(COMMON_TOOLS_PATH)mv$(EXECUTABLE_SUFFIX)" -f
 MAKE    := "$(COMMON_TOOLS_PATH)make$(EXECUTABLE_SUFFIX)"
 BIN2C   := "$(COMMON_TOOLS_PATH)bin2c$(EXECUTABLE_SUFFIX)"
-
 
 SHOULD_I_WAIT_FOR_DOWNLOAD := $(filter download download_apps ota2_download ota2_factory_download, $(MAKECMDGOALS))
 BUILD_STRING ?= $(strip $(filter-out $(MAKEFILE_TARGETS) debug download download_apps download_only run terminal total, $(MAKECMDGOALS)))
