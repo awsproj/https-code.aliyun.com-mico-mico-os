@@ -15,7 +15,7 @@
 #include "platform_config.h"
 #include "tftp_ota/tftp.h"
 
-#define CFG_SUPPORT_BKREG 1
+//#define CFG_SUPPORT_BKREG 1
 
 #ifdef MICO_CLI_ENABLE
 
