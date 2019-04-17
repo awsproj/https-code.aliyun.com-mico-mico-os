@@ -65,6 +65,12 @@ int socket(int domain, int type, int protocol)
 
 int setsockopt (int socket, int level, int optname, void *optval, socklen_t optlen)
 {
+    if(optname == SO_SNDTIMEO || optname == SO_RCVTIMEO){
+        struct timeval *tv = (struct timeval *)optval;
+        int timeout = 0;
+        timeout = tv->tv_sec*1000 + tv->tv_usec/1000;
+        return lib_api_p->lwip_apis->lwip_setsockopt(socket, level, optname, &timeout, optlen);
+    }
     return lib_api_p->lwip_apis->lwip_setsockopt(socket, level, optname,optval, optlen);
 }
 
