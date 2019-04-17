@@ -101,7 +101,12 @@ SECTIONS
     {
         link_global_data_initial_values = LOADADDR( .data ); /* This is the location in flash of the initial values of global variables */
         link_global_data_start = .;
-        *(.data*)
+        *(.data*)     
+		/*add Function Symble Table by xiaomi.*/
+		. = ALIGN(4);
+		KEEP(*(SORT(.miio_addon_list*)));
+		. = ALIGN(4);
+		/*add Function Symble Table by xiaomi end.*/
         link_global_data_end = .;
         . = ALIGN(., 4);
     }> SRAM AT> APP_FLASH
