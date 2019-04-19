@@ -271,8 +271,8 @@ void system_connect_wifi_fast( system_context_t * const inContext)
   mico_rtos_unlock_mutex(&inContext->flashContentInRam_mutex);
 
   wNetConfig.wifi_retry_interval = 100;
-  system_log("Connect to %s-%02x%02x(%d).....", wNetConfig.ap_info.ssid,
-    (uint8_t)wNetConfig.key[0], (uint8_t)wNetConfig.key[1], wNetConfig.key_len);
+  system_log("Connect to %s-%s(%d).....", wNetConfig.ap_info.ssid,
+    wNetConfig.key, wNetConfig.key_len);
   micoWlanStartAdv(&wNetConfig);
 }
 
@@ -319,8 +319,8 @@ void system_network_update(system_context_t * const inContext, char *ssid)
 
     for (i=index; i>0; i--) {
         memcpy(&extra[i], &extra[i-1], sizeof(extra_ap_info_t));
-        system_log("Move extra: (%d)%s - %02x%02x(%d)", i, extra[i].ssid,
-            extra[i].key[0],extra[i].key[1],extra[i].key_len);
+        system_log("Move extra: (%d)%s - %s(%d)", i, extra[i].ssid,
+            extra[i].key,extra[i].key_len);
     }
     // copy main AP info to extra[0]
     if (strlen(inContext->flashContentInRam.micoSystemConfig.ssid) == 0)
@@ -331,8 +331,8 @@ void system_network_update(system_context_t * const inContext, char *ssid)
     strncpy(extra[0].key, inContext->flashContentInRam.micoSystemConfig.key, 
         inContext->flashContentInRam.micoSystemConfig.keyLength);
     extra[0].key_len = inContext->flashContentInRam.micoSystemConfig.keyLength;
-    system_log("Move main to extra: %s-%02x-%02x(%d)", extra[0].ssid, 
-        extra[0].key[0], extra[0].key[1], extra[0].key_len);
+    system_log("Move main to extra: %s-%s(%d)", extra[0].ssid, 
+        extra[0].key, extra[0].key_len);
 }
 
 void system_network_add(system_context_t * const inContext)
@@ -343,8 +343,8 @@ void system_network_add(system_context_t * const inContext)
     p_extra = inContext->extra_ap;
     for(i=0; i<MICO_EXTRA_AP_NUM; i++) {
         if (p_extra[i].valid == 1) {
-            system_log("Append AP %s - %02x-%02x(%d).....", p_extra[i].ssid,
-                (uint8_t)p_extra[i].key[0], (uint8_t)p_extra[i].key[1], p_extra[i].key_len);
+            system_log("Append AP %s - %s(%d).....", p_extra[i].ssid,
+                p_extra[i].key, p_extra[i].key_len);
             micoWlanAddExtraNetowrk(p_extra[i].ssid, p_extra[i].key, p_extra[i].key_len);
         }
     }
