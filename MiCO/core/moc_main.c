@@ -166,6 +166,9 @@ static void application_thread_main( mico_thread_arg_t arg )
 #endif
 
     mico_rtos_init( );
+#ifdef CONFIG_CPU_MX1290
+    mico_disable_health_monitor();
+#endif
     application_start( );
     mico_rtos_delete_thread( NULL );
 }
