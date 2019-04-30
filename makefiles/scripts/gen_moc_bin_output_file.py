@@ -8,6 +8,7 @@
 
 import os, sys, re, struct, platform, getopt, subprocess, hashlib
 from sys import platform as _platform
+from crc32 import crc32
 
 def CRC16(bytes):
     wcrc = 0
@@ -95,7 +96,7 @@ def main():
     moc_app = open(MOC_APP_FILE, 'rb')
     moc_kernel = open(MOC_KERNEL_FILE, 'rb')
     moc_app_output = open(MOC_APP_OUTPUT_FILE, 'wb')
-    moc_ota_output = open(MOC_OTA_OUTPUT_FILE, 'wb')
+    moc_ota_output = open(MOC_OTA_OUTPUT_FILE, 'wb+')
 
     app = moc_app.read()
     kernel = moc_kernel.read()
@@ -123,6 +124,11 @@ def main():
         ota_md5_bytes = MD5(file.read())
     with open(MOC_OTA_OUTPUT_FILE, 'ab') as file:
         file.write(ota_md5_bytes)
+
+    with open(MOC_OTA_OUTPUT_FILE, 'rb') as file:
+        crc_32 = crc32( file.read() ) & 0xffffffff
+    with open(MOC_OTA_OUTPUT_FILE, 'ab') as file:
+        file.write(struct.pack('<i', crc_32 ))
 
 if __name__ == "__main__":
     try:
