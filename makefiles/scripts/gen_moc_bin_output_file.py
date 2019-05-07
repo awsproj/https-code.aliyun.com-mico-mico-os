@@ -127,8 +127,10 @@ def main():
 
     with open(MOC_OTA_OUTPUT_FILE, 'rb') as file:
         crc_32 = crc32( file.read() ) & 0xffffffff
+        print "ota bin crc32: " 
+        print crc_32
     with open(MOC_OTA_OUTPUT_FILE, 'ab') as file:
-        file.write(struct.pack('<i', crc_32 ))
+        file.write(struct.pack('<I', crc_32 ))
 
 if __name__ == "__main__":
     try:
