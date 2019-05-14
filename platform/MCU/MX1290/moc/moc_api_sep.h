@@ -42,6 +42,9 @@ typedef struct {
     int (*HmacUpdate)(Hmac*, const byte*, word32);
     int (*HmacFinal)(Hmac*, byte*);
 
+	int (*RsaPrivateDecrypt)(const byte* in, word32 inLen, byte* out, word32 outLen, RsaKey* key);
+	int (*RsaSSL_Sign)(const byte* in, word32 inLen, byte* out, word32 outLen, RsaKey* key, CyaSSL_RNG* rng);
+	int (*RsaPrivateKeyDecode)(const byte* input, word32* inOutIdx, RsaKey* key, word32 length);
 }extra_crypto_api_t;
 
 typedef void (*mgnt_handler_t)(uint8_t *buf, int buf_len);

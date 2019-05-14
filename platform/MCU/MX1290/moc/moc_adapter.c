@@ -393,7 +393,11 @@ int FreeRng(CyaSSL_RNG* rng)
     return extra_apis->FreeRng(rng);
 }
 
-
+int  RsaPrivateKeyDecode(const byte* input, word32* inOutIdx, RsaKey* key, word32 inSz)
+{
+    EXTRA_CRYPTO_CHECK();
+    return extra_apis->RsaPrivateKeyDecode(input, inOutIdx, key, inSz);
+}
 int  RsaPublicKeyDecode(const byte* input, word32* inOutIdx, RsaKey* key, word32 inSz)
 {
     EXTRA_CRYPTO_CHECK();
@@ -409,12 +413,25 @@ int  FreeRsaKey(RsaKey* key)
     EXTRA_CRYPTO_CHECK();
     return extra_apis->FreeRsaKey(key);
 }
+int  RsaPrivateDecrypt(const byte* in, word32 inLen, byte* out,
+                         word32 outLen, RsaKey* key)
+{
+    EXTRA_CRYPTO_CHECK();
+    return extra_apis->RsaPrivateDecrypt(in, inLen, out,
+                         outLen, key);
+}
 int  RsaPublicEncrypt(const byte* in, word32 inLen, byte* out,
                          word32 outLen, RsaKey* key, CyaSSL_RNG* rng)
 {
     EXTRA_CRYPTO_CHECK();
     return extra_apis->RsaPublicEncrypt(in, inLen, out,
                          outLen, key, rng);
+}
+int  RsaSSL_Sign(const byte* in, word32 inLen, byte* out,
+                 word32 outLen, RsaKey* key, CyaSSL_RNG* rng)
+{
+    EXTRA_CRYPTO_CHECK();
+    return extra_apis->RsaSSL_Sign(in, inLen, out, outLen, key, rng);
 }
 int  RsaSSL_Verify(const byte* in, word32 inLen, byte* out,
                       word32 outLen, RsaKey* key)
