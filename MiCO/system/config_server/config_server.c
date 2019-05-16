@@ -372,6 +372,7 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
   configContext_t *http_context = (configContext_t *)inHeader->userContext;
   mico_logic_partition_t* ota_partition = MicoFlashGetInfo( MICO_PARTITION_OTA_TEMP );
   char name[50];
+  char http_response_ok_data_str[] = {"\{\"code\": 200\}"};
 
   json_object *sectors, *sector = NULL;
 
@@ -539,7 +540,8 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
 
       require( inHeader->contentLength > 0, exit );
 
-      system_log( "Recv new configuration from uAP, apply and connect to AP" );
+      system_log( "Recv new configuration from uAP, apply and connect to AP. len=%d\r\n%s" ,
+                  inHeader->extraDataLen, inHeader->extraDataPtr);
 
       inContext->flashContentInRam.micoSystemConfig.easyLinkByPass = EASYLINK_BYPASS_NO;
 
@@ -590,10 +592,18 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
       mico_rtos_unlock_mutex(&inContext->flashContentInRam_mutex);
       json_object_put( config );
 
-      err = CreateSimpleHTTPOKMessage( &httpResponse, &httpResponseLen );
-      require_noerr( err, exit );
+      // err = CreateSimpleHTTPOKMessage( &httpResponse, &httpResponseLen );
+      // require_noerr( err, exit );
 
+      // err = SocketSend( fd, httpResponse, httpResponseLen );
+      // require_noerr( err, exit );
+
+      err =  CreateSimpleHTTPMessageNoCopy( kMIMEType_JSON, strlen(http_response_ok_data_str), &httpResponse, &httpResponseLen );
+      require_noerr( err, exit );
+      require( httpResponse, exit );
       err = SocketSend( fd, httpResponse, httpResponseLen );
+      require_noerr( err, exit );
+      err = SocketSend( fd, (uint8_t *)http_response_ok_data_str, strlen(http_response_ok_data_str) );
       require_noerr( err, exit );
 
       if ( _uap_configured_cb ) {

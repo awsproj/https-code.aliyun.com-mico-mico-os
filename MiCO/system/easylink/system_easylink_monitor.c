@@ -61,11 +61,104 @@ static mico_config_source_t source = CONFIG_BY_NONE;
 static mico_connect_fail_config_t connect_fail_config = EXIT_EASYLINK;
 
 /* AP usually works at channel 1, 6 or 11, increasing the probability of switching to these channels.*/
+#if PLATFORM_CONFIG_EASYLINK_SOFTAP_COEXISTENCE
+static char wifi_ssid[32] = {0};
+static uint8_t softap_channel = 6;
+static const uint8_t ch_tbl[] = {1,6,11,6,2,6,3,6,4,6,5,6,1,6,11,6,7,6,8,6,9,6,10,6,1,6,11,6,12,6,13};  // add more channel 6 for softap
+static bool config_uap_started = false;
+mico_thread_t _easylink_uap_start_thread_handler = NULL;
+#else
 static const uint8_t ch_tbl[] = {1,6,11,2,3,4,5,1,6,11,7,8,9,10,1,6,11,12,13};
+#endif
 
 /******************************************************
  *               Function Definitions
  ******************************************************/
+
+#if PLATFORM_CONFIG_EASYLINK_SOFTAP_COEXISTENCE
+void config_uap_start(void);
+typedef void (*uap_start_cb)(void);
+extern int mico_wlan_monitor_enable_softap(char *ssid, int channel, uap_start_cb cb);
+extern void wechat_set_user_id(int id);
+
+static void easylink_uap_configured_cd(uint32_t id)
+{
+    system_log("easylink_uap got user_id = %d", id);
+    wechat_set_user_id(id);
+    easylink_id = id;
+    easylink_success = true;
+    micoWlanSuspendSoftAP();
+    mico_rtos_set_semaphore( &easylink_sem );
+}
+
+static void _easylink_softap_start_thread(void* arg)
+{
+    OSStatus err = kNoErr;
+    network_InitTypeDef_st wNetConfig;
+    system_context_t *context = (system_context_t *) mico_system_context_get();
+
+    system_log("_easylink_softap_start_thread ...");
+
+    /* stop monitor */
+    switch_channel_flag = false;
+    mico_wlan_stop_monitor();
+    mico_easylink_monitor_delegate_stoped();
+    micoWlanSuspend();
+
+    bk_wlan_ap_set_channel_config(softap_channel);
+
+    // stop wave config
+    //stop_wave_comm_cfg();
+
+    /* Start config server */
+    err = config_server_start( );
+    require_noerr( err, exit );
+    config_server_set_uap_cb( easylink_uap_configured_cd );
+
+    /* start real softap */
+    config_uap_started = true;
+    memset( &wNetConfig, 0, sizeof(network_InitTypeDef_st) );
+    wNetConfig.wifi_mode = Soft_AP;
+#ifdef PLATFORM_CONFIG_SOFTAP_SSID
+    strncpy( (char*) wNetConfig.wifi_ssid, PLATFORM_CONFIG_SOFTAP_SSID, 32);
+#else
+    snprintf( wNetConfig.wifi_ssid, 32, "EasyLink_%c%c%c%c%c%c",
+              context->micoStatus.mac[9], context->micoStatus.mac[10], context->micoStatus.mac[12],
+              context->micoStatus.mac[13], context->micoStatus.mac[15], context->micoStatus.mac[16] );    
+#endif
+    strcpy( (char*) wNetConfig.wifi_key, "" );
+    strcpy( (char*) wNetConfig.local_ip_addr, "10.10.10.1" );
+    strcpy( (char*) wNetConfig.net_mask, "255.255.255.0" );
+    strcpy( (char*) wNetConfig.gateway_ip_addr, "10.10.10.1" );
+    wNetConfig.dhcpMode = DHCP_Server;
+    micoWlanStart( &wNetConfig );
+    system_log("Establish soft ap: %s, channel: %d .....", wNetConfig.wifi_ssid, softap_channel);
+    mico_system_delegate_soft_ap_will_start();
+
+    /* Start bonjour service for device discovery under soft ap mode */
+    // err = easylink_bonjour_start( Soft_AP, 0, context );
+    // require_noerr( err, exit );
+
+exit:
+    _easylink_uap_start_thread_handler = NULL;
+    mico_rtos_delete_thread( NULL );
+}
+
+void config_uap_start(void)
+{
+    OSStatus err = kNoErr;
+
+    if( (!config_uap_started) && (NULL == _easylink_uap_start_thread_handler) ){
+        err = mico_rtos_create_thread(&_easylink_uap_start_thread_handler, MICO_DEFAULT_LIBRARY_PRIORITY, "uap_start",
+                                        _easylink_softap_start_thread, 0x800, (mico_thread_arg_t)0);
+        require_noerr_string( err, exit, "ERROR: Unable to start the _easylink_softap_start_thread !" );
+    }
+
+exit:
+    return;
+}
+#endif
+
 
 /* MiCO callback when WiFi status is changed */
 static void easylink_wifi_status_cb( WiFiEvent event, system_context_t * const inContext )
@@ -80,6 +173,14 @@ static void easylink_wifi_status_cb( WiFiEvent event, system_context_t * const i
             mico_system_context_update( &inContext->flashContentInRam ); //Update Flash content
             mico_rtos_set_semaphore( &easylink_connect_sem ); //Notify Easylink thread
             break;
+#if PLATFORM_CONFIG_EASYLINK_SOFTAP_COEXISTENCE
+        case NOTIFY_AP_DOWN:
+            system_log("CONFIG_AP: down");
+            break;
+        case NOTIFY_AP_UP:
+            system_log("CONFIG_AP: up");
+            break;
+#endif
         default:
             break;
     }
@@ -231,9 +332,22 @@ static void switch_channel_thread(mico_thread_arg_t arg)
                 mico_wlan_monitor_set_channel( wlan_channel );
                 lock_channel = wlan_channel;
                 mico_easylink_monitor_delegate_channel_changed( wlan_channel );
+                #if PLATFORM_CONFIG_EASYLINK_SOFTAP_COEXISTENCE
+                softap_channel = lock_channel;
+                system_log("softap channel changed: channel = %d", softap_channel);
+                mico_wlan_monitor_enable_softap(wifi_ssid, softap_channel, config_uap_start);
+                #endif
             }
         }
+        #if PLATFORM_CONFIG_EASYLINK_SOFTAP_COEXISTENCE
+        if(softap_channel == lock_channel){
+            mico_rtos_delay_milliseconds(wlan_channel_walker_interval+100);
+        } else {
+            mico_rtos_delay_milliseconds(wlan_channel_walker_interval);
+        }
+        #else
         mico_rtos_delay_milliseconds(wlan_channel_walker_interval);
+        #endif
         total_delay = 0;
         do {
             delay_time = mico_easylinK_monitor_delay_switch();
@@ -243,7 +357,8 @@ static void switch_channel_thread(mico_thread_arg_t arg)
                     break;
                 }
                 mico_rtos_delay_milliseconds(delay_time);
-            }
+            }
+
         } while(delay_time > 0);
     }
     switch_channel_thread_handler = NULL;
@@ -288,12 +403,29 @@ restart:
     mico_rtos_create_thread(&switch_channel_thread_handler, MICO_DEFAULT_WORKER_PRIORITY, "sw_channel",
                             switch_channel_thread, 0x1000, (mico_thread_arg_t)(current + EasyLink_TimeOut));
 
+#if PLATFORM_CONFIG_EASYLINK_SOFTAP_COEXISTENCE
+#ifdef PLATFORM_CONFIG_SOFTAP_SSID
+    strncpy(wifi_ssid, PLATFORM_CONFIG_SOFTAP_SSID, 32);
+#else
+    snprintf( wifi_ssid, 32, "EasyLink_%c%c%c%c%c%c",
+              context->micoStatus.mac[9], context->micoStatus.mac[10], context->micoStatus.mac[12],
+              context->micoStatus.mac[13], context->micoStatus.mac[15], context->micoStatus.mac[16] );
+#endif
+    system_log("wlan monitor enable softap: %s, channel = %d", wifi_ssid, softap_channel);
+    mico_wlan_monitor_enable_softap(wifi_ssid, softap_channel, config_uap_start);
+#endif
+
     while( mico_rtos_get_semaphore( &easylink_sem, 0 ) == kNoErr );
     err = mico_rtos_get_semaphore( &easylink_sem, MICO_WAIT_FOREVER );
 
+    system_log("Stop easylink monitor !");
     switch_channel_flag = false;
     mico_wlan_stop_monitor();
     mico_easylink_monitor_delegate_stoped();
+
+#if PLATFORM_CONFIG_EASYLINK_SOFTAP_COEXISTENCE
+    micoWlanSuspendSoftAP();
+#endif
 
     /* Easylink force exit by user, clean and exit */
     if( err != kNoErr && easylink_thread_force_exit )
@@ -342,6 +474,12 @@ restart:
             mico_system_delegate_config_result( source, MICO_TRUE );
             mico_easylink_monitor_delegate_connect_success( source );
         }
+#if 0 //PLATFORM_CONFIG_EASYLINK_SOFTAP_COEXISTENCE
+        /* Start bonjour service for new device discovery */
+        err = easylink_bonjour_start( Station, easylink_id, context );
+        require_noerr( err, exit );
+        SetTimer( 60 * 1000, easylink_remove_bonjour );
+#endif
     }
     else /* EasyLink failed */
     {
@@ -356,6 +494,13 @@ exit:
     mico_system_notify_remove( mico_notify_WIFI_STATUS_CHANGED, (void *)easylink_wifi_status_cb );
     mico_system_notify_remove( mico_notify_EASYLINK_WPS_COMPLETED, (void *)easylink_complete_cb );
     mico_system_notify_remove( mico_notify_EASYLINK_GET_EXTRA_DATA, (void *)easylink_extra_data_cb );
+
+#if PLATFORM_CONFIG_EASYLINK_SOFTAP_COEXISTENCE
+#ifndef MICO_CONFIG_SERVER_ENABLE
+    config_server_stop( );
+#endif
+    config_uap_started = false;
+#endif
 
     mico_rtos_deinit_semaphore( &easylink_sem );
     mico_rtos_deinit_semaphore( &easylink_connect_sem );
