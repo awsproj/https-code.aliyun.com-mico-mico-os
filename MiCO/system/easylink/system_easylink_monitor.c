@@ -87,7 +87,7 @@ static void easylink_uap_configured_cd(uint32_t id)
     wechat_set_user_id(id);
     easylink_id = id;
     easylink_success = true;
-    micoWlanSuspendSoftAP();
+    //micoWlanSuspendSoftAP();
     mico_rtos_set_semaphore( &easylink_sem );
 }
 
@@ -168,19 +168,11 @@ static void easylink_wifi_status_cb( WiFiEvent event, system_context_t * const i
         case NOTIFY_STATION_UP:
             /* Connected to AP, means that the wlan configuration is right, update configuration in flash and update
              bongjour txt record with new "easylink_id" */
-            easylink_bonjour_update( Station, easylink_id, inContext );
+            //easylink_bonjour_update( Station, easylink_id, inContext );
             inContext->flashContentInRam.micoSystemConfig.configured = allConfigured;
             mico_system_context_update( &inContext->flashContentInRam ); //Update Flash content
             mico_rtos_set_semaphore( &easylink_connect_sem ); //Notify Easylink thread
             break;
-#if PLATFORM_CONFIG_EASYLINK_SOFTAP_COEXISTENCE
-        case NOTIFY_AP_DOWN:
-            system_log("CONFIG_AP: down");
-            break;
-        case NOTIFY_AP_UP:
-            system_log("CONFIG_AP: up");
-            break;
-#endif
         default:
             break;
     }
@@ -424,6 +416,7 @@ restart:
     mico_easylink_monitor_delegate_stoped();
 
 #if PLATFORM_CONFIG_EASYLINK_SOFTAP_COEXISTENCE
+    config_server_stop();
     micoWlanSuspendSoftAP();
 #endif
 
@@ -496,9 +489,6 @@ exit:
     mico_system_notify_remove( mico_notify_EASYLINK_GET_EXTRA_DATA, (void *)easylink_extra_data_cb );
 
 #if PLATFORM_CONFIG_EASYLINK_SOFTAP_COEXISTENCE
-#ifndef MICO_CONFIG_SERVER_ENABLE
-    config_server_stop( );
-#endif
     config_uap_started = false;
 #endif
 
@@ -545,7 +535,7 @@ OSStatus mico_easylink_monitor_with_easylink( mico_Context_t * const in_context,
 
     require_action( in_context, exit, err = kNotPreparedErr );
 
-    easylink_remove_bonjour( );
+    //easylink_remove_bonjour( );
 
     /* easylink thread existed? stop! */
     if ( easylink_monitor_thread_handler ) {
