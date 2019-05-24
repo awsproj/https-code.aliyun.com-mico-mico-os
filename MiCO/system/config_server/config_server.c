@@ -372,9 +372,16 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
   configContext_t *http_context = (configContext_t *)inHeader->userContext;
   mico_logic_partition_t* ota_partition = MicoFlashGetInfo( MICO_PARTITION_OTA_TEMP );
   char name[50];
-  char http_response_ok_data_str[] = {"\{\"code\": 200\}"};
+  char http_response_ok_data_str[50] = {0};
+  char dsn[18] = {0};
+  uint8_t mac[6] = {0};
 
   json_object *sectors, *sector = NULL;
+
+  mico_wlan_get_mac_address(mac);
+  sprintf(dsn, "%02X%02X%02X%02X%02X%02X", mac[0],mac[1],mac[2],mac[3],mac[4],mac[5]);
+  system_log("dsn %s", dsn);
+  sprintf(http_response_ok_data_str, "\{\"code\": %d,\"dsn\": \"%s\"\}", 200, dsn);
 
   if(HTTPHeaderMatchURL( inHeader, kCONFIGURLRead ) == kNoErr){    
     //report = ConfigCreateReportJsonMessage( inContext );
