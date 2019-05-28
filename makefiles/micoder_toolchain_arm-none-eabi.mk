@@ -98,7 +98,7 @@ CXX     := "$(TOOLCHAIN_PATH)$(TOOLCHAIN_PREFIX)g++$(EXECUTABLE_SUFFIX)"
 AS      := "$(TOOLCHAIN_PATH)$(TOOLCHAIN_PREFIX)as$(EXECUTABLE_SUFFIX)"
 AR      := "$(TOOLCHAIN_PATH)$(TOOLCHAIN_PREFIX)ar$(EXECUTABLE_SUFFIX)"
 
-ADD_COMPILER_SPECIFIC_STANDARD_CFLAGS   = $(1) -Wall -Wfatal-errors -fsigned-char -ffunction-sections -fdata-sections -fno-common -std=gnu11 $(if $(filter yes,$(MXCHIP_INTERNAL) $(TESTER)),-Werror)
+ADD_COMPILER_SPECIFIC_STANDARD_CFLAGS   = $(1) -Wall -Wformat=0 -Wfatal-errors -fsigned-char -ffunction-sections -fdata-sections -fno-common -std=gnu11 $(if $(filter yes,$(MXCHIP_INTERNAL) $(TESTER)),-Werror)
 ADD_COMPILER_SPECIFIC_STANDARD_CXXFLAGS = $(1) -Wall -Wfatal-errors -fsigned-char -ffunction-sections -fdata-sections -fno-common -fno-rtti -fno-exceptions  $(if $(filter yes,$(MXCHIP_INTERNAL) $(TESTER)),-Werror)
 ADD_COMPILER_SPECIFIC_STANDARD_ADMFLAGS = $(1)
 COMPILER_SPECIFIC_OPTIMIZED_CFLAGS    := -Os
