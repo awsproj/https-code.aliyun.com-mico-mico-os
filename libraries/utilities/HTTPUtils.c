@@ -1051,7 +1051,8 @@ void HTTPHeaderDestory( HTTPHeader_t **inHeader )
 {
   if( *inHeader != NULL ){
     HTTPHeaderClear( *inHeader );
-    free( (*inHeader)->buf );
+    if ( (*inHeader)->buf )
+        free( (*inHeader)->buf );
     free( *inHeader );   
     *inHeader = NULL;
   }
