@@ -142,7 +142,6 @@ typedef enum
     MICO_PARTITION_KV = MICO_PARTITION_USER,
     MICO_PARTITION_FILESYS = MICO_PARTITION_USER,
     MICO_PARTITION_SDS,
-    MICO_PARTITION_KV,
 } mico_user_partition_t;
 
 typedef struct
