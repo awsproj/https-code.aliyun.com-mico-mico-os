@@ -75,9 +75,12 @@ extern void dns_ip_set( uint8_t *hostname, uint32_t ip );
 extern void join_fail( OSStatus err );
 extern void wifi_reboot_event( void );
 extern void mico_rtos_stack_overflow( char *taskname );
+extern int user_qc_output(char *buffer, int len);
+extern void dhcps_client_new(uint32_t client_ip);
 
 /* MOC main function, called by MOC kernel */
-void moc_app_main( const mico_api_t *lib_api_t );
+void moc_app_init( const mico_api_t *lib_api_t );
+void moc_app_main( void );
 
 /******************************************************
 *               Variables Definitions
@@ -113,8 +116,8 @@ USED const user_api_t user_handler = {
     .debug_baudrate = 115200,
 #endif
 
-    .user_app_in = moc_app_main,
-    .init_platform = NULL,
+    .user_app_in = moc_app_init,
+    .init_platform = moc_app_main,
     .application_start = NULL,
 
     .ApListCallback = ApListCallback,
@@ -133,6 +136,8 @@ USED const user_api_t user_handler = {
     .pinmaps = &peripherals_pinmap,
     .gpio_init = gpio_init,
     .stdio_break_in = 1, // 1=enable: bootloader use user uart to enter boot mode.
+    .user_qc_output = user_qc_output,
+    .dhcps_client_up = dhcps_client_new,
 #endif
 };
 
@@ -172,7 +177,7 @@ static void application_thread_main( mico_thread_arg_t arg )
 extern void init_debug_uart(void);
 #endif
 
-void moc_app_main( const mico_api_t *moc_kernel_apis )
+void moc_app_init( const mico_api_t *moc_kernel_apis )
 {
 #if defined ( __ICCARM__ )
     uint32_t heap_begin = (uint32_t)&heap_start;
@@ -191,15 +196,18 @@ void moc_app_main( const mico_api_t *moc_kernel_apis )
 #else
 	lib_api_p = moc_kernel_apis;
 #endif
- 
+    
+    lib_api_p->heap_insert( (uint8_t*) heap_begin, (int) size );
+}
+
+void moc_app_main( void )
+{
     mico_rtos_init_mutex( &stdio_tx_mutex );
 #ifdef CONFIG_CPU_MX1290
  	init_debug_uart();
 #endif
     moc_main_log( "Lib version %s. APP built time %s", lib_api_p->library_version, __TIME__ );
-    moc_main_log( "heap reuse from %p, %ld bytes", (void *) heap_begin, size );
-    lib_api_p->heap_insert( (uint8_t*) heap_begin, (int) size );
-
+    
     /* Init nano second clock counter */
     platform_init_nanosecond_clock();
 

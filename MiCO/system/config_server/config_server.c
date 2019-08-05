@@ -220,7 +220,7 @@ void localConfig_thread(uint32_t inFd)
   require_action( httpHeader, exit, err = kNoMemoryErr );
   HTTPHeaderClear( httpHeader );
 
-  t.tv_sec = 60;
+  t.tv_sec = 3;
   t.tv_usec = 0;
   system_log("Free memory %d bytes", MicoGetMemoryInfo()->free_memory) ; 
 
@@ -231,7 +231,7 @@ void localConfig_thread(uint32_t inFd)
     clientFdIsSet = 0;
 
     if(httpHeader->len == 0){
-      require(select( Max(clientFd, close_client_fd) + 1 , &readfds, NULL, NULL, &t) >= 0, exit);
+      require(select( Max(clientFd, close_client_fd) + 1 , &readfds, NULL, NULL, &t) > 0, exit);
       clientFdIsSet = FD_ISSET(clientFd, &readfds);
     }
 
@@ -256,7 +256,6 @@ void localConfig_thread(uint32_t inFd)
             err = _LocalConfigRespondInComingMessage( clientFd, httpHeader, sys_context );
             require_noerr(err, exit);
             err = kConnectionErr;
-            goto exit;
           }else{
             require_noerr(err, exit);
             err = _LocalConfigRespondInComingMessage( clientFd, httpHeader, sys_context );
@@ -264,6 +263,7 @@ void localConfig_thread(uint32_t inFd)
           }
 
           HTTPHeaderClear( httpHeader );
+          goto exit;
         break;
 
         case EWOULDBLOCK:
@@ -372,6 +372,8 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
   configContext_t *http_context = (configContext_t *)inHeader->userContext;
   mico_logic_partition_t* ota_partition = MicoFlashGetInfo( MICO_PARTITION_OTA_TEMP );
   char name[50];
+  const char *response_body = "{\"code\":0}";
+  char *http_body_buff = NULL;
 
   json_object *sectors, *sector = NULL;
 
@@ -473,7 +475,13 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
       err = SocketSend( fd, httpResponse, httpResponseLen );
       require_noerr( err, exit );
 
-      config = json_tokener_parse(inHeader->extraDataPtr);
+      http_body_buff = malloc( inHeader->extraDataLen + 1 );
+      require_action( http_body_buff != NULL, exit, err = kUnknownErr );
+
+      memset( http_body_buff, 0, inHeader->extraDataLen + 1 );
+      memcpy( http_body_buff, inHeader->extraDataPtr, inHeader->extraDataLen );
+
+      config = json_tokener_parse(http_body_buff);
       require_action(config, exit, err = kUnknownErr);
       system_log("Recv config object=%s", json_object_to_json_string(config));
       mico_rtos_lock_mutex(&inContext->flashContentInRam_mutex);
@@ -543,7 +551,15 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
 
       inContext->flashContentInRam.micoSystemConfig.easyLinkByPass = EASYLINK_BYPASS_NO;
 
-      config = json_tokener_parse(inHeader->extraDataPtr);
+      http_body_buff = malloc( inHeader->extraDataLen + 1 );
+      require_action( http_body_buff != NULL, exit, err = kUnknownErr );
+
+      memset( http_body_buff, 0, inHeader->extraDataLen + 1 );
+      memcpy( http_body_buff, inHeader->extraDataPtr, inHeader->extraDataLen );
+
+      system_log("get data:%s", http_body_buff);
+
+      config = json_tokener_parse(http_body_buff);
       require_action(config, exit, err = kUnknownErr);
       system_log("Recv config object from uap =%s", json_object_to_json_string(config));
       mico_rtos_lock_mutex(&inContext->flashContentInRam_mutex);
@@ -590,10 +606,12 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
       mico_rtos_unlock_mutex(&inContext->flashContentInRam_mutex);
       json_object_put( config );
 
-      err = CreateSimpleHTTPOKMessage( &httpResponse, &httpResponseLen );
+      err = CreateSimpleHTTPMessageNoCopy( kMIMEType_JSON, strlen( response_body ), &httpResponse, &httpResponseLen );
       require_noerr( err, exit );
-
+      require( httpResponse, exit );
       err = SocketSend( fd, httpResponse, httpResponseLen );
+      require_noerr( err, exit );
+      err = SocketSend( fd, (uint8_t *) response_body, strlen( response_body ) );
       require_noerr( err, exit );
 
       if ( _uap_configured_cb ) {
@@ -632,6 +650,13 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
  exit:
   if(inHeader->persistent == false)  //Return an err to close socket and exit the current thread
     err = kConnectionErr;
+
+    if ( http_body_buff != NULL )
+    {
+        free( http_body_buff );
+        http_body_buff = NULL;
+    }
+
   if(httpResponse)  free(httpResponse);
   if(report)        json_object_put(report);
   if(config)        json_object_put(config);

@@ -44,7 +44,7 @@ typedef struct {
 
 }extra_crypto_api_t;
 
-typedef void (*mgnt_handler_t)(char *buf, int buf_len);
+typedef void (*mgnt_handler_t)(uint8_t *buf, int buf_len);
 
 typedef struct {
 	/* OS Layer*/
@@ -111,6 +111,20 @@ typedef struct {
     int (*mico_change_timer_period)( mico_timer_t* timer, uint32_t new_period );
 
     char *(*get_current_task_name)(void);
+	int (*mico_rtos_get_task_status)(mico_thread_t* thread);
+
+	int (*mico_rtos_eventgroup_init)(void *handler);
+	int (*mico_rtos_eventgroup_deinit)(void * handler);
+	int (*mico_rtos_eventgroup_set_bits)(void * handler, int bits);
+	int (*mico_rtos_eventgroup_clear_bits)(void * handler, int bits);
+	int (*mico_rtos_eventgroup_wait_bits)(void * handler, int bits, int isClearOnExit, int isWaitForAllBits, int waitMs);
+	mico_thread_t (*mico_rtos_get_current_thread)( void );
+	void (*mico_rtos_set_thread_arg)(mico_thread_t *thread, void *arg);
+	void *(*mico_rtos_get_thread_arg)(mico_thread_t *thread);
+	mico_thread_t* (*mico_rtos_create_thread_static)(uint8_t priority, const char* name, mico_thread_function_t function, uint32_t stack_size, void* arg, uint8_t *stackbuf, uint8_t *threadbuf );
+	OSStatus (*mico_rtos_try_lock_mutex)( mico_mutex_t* mutex );
+	void (*mico_rtos_enter_critical)( void );
+	void (*mico_rtos_exit_critical)( void );
 } os_api_v1_t;
 
 typedef struct {
@@ -267,6 +281,8 @@ typedef struct {
 	OSStatus (*MicoRtcGetTime)(mico_rtc_time_t *time);
 	OSStatus (*MicoRtcSetTime)(mico_rtc_time_t *time);
     OSStatus (*MicoRtcSetalarm)(mico_rtc_time_t *time, rtc_irq_handler handler);
+	OSStatus (*MicoRtcGetSeconds)(uint32_t* time);
+	OSStatus (*MicoRtcSetSeconds)(uint32_t* time);
 } rtc_api_t;
 
 typedef struct {

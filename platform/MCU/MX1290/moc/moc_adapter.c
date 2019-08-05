@@ -309,6 +309,14 @@ int wlan_rx_mgnt_set(int enable, mgnt_handler_t cb)
 	return _kernel_api.wifi_apis->wlan_rx_mgnt_set(enable, cb);
 }
 
+OSStatus mico_wlan_register_recv_mgnt(monitor_cb_t fn)
+{
+    if (fn == NULL)
+        return _kernel_api.wifi_apis->wlan_rx_mgnt_set(false, NULL);
+    else
+        return _kernel_api.wifi_apis->wlan_rx_mgnt_set(true, fn);
+}
+
 void autoconfig_start(int seconds, int mode)
 {
 	_kernel_api.wifi_apis->autoconfig_start(seconds, mode);
@@ -509,7 +517,99 @@ char *mico_current_task_name(void)
     return _kernel_api.os_apis->get_current_task_name();
 }
 
+int mico_rtos_get_task_status(mico_thread_t* thread)
+{
+	return _kernel_api.os_apis->mico_rtos_get_task_status(thread);
+}
+
+OSStatus MicoRtcGetSeconds(uint32_t* time)
+{
+	return _kernel_api.rtc_apis->MicoRtcGetSeconds(time); 
+}
+
+OSStatus MicoRtcSetSeconds(uint32_t* time)
+{
+	return _kernel_api.rtc_apis->MicoRtcSetSeconds(time); 
+}
+
+OSStatus mico_rtos_eventgroup_init(void *handler)
+{
+    return _kernel_api.os_apis->mico_rtos_eventgroup_init(handler);
+}
+
+OSStatus mico_rtos_eventgroup_deinit(void * handler)
+{
+    return _kernel_api.os_apis->mico_rtos_eventgroup_deinit(handler);
+}
+
+int mico_rtos_eventgroup_set_bits(void * handler, int bits)
+{
+    return _kernel_api.os_apis->mico_rtos_eventgroup_set_bits(handler, bits);
+}
+
+int mico_rtos_eventgroup_clear_bits(void * handler, int bits)
+{
+    return _kernel_api.os_apis->mico_rtos_eventgroup_clear_bits(handler, bits);
+}
+
+int mico_rtos_eventgroup_wait_bits(void * handler, int bits, int isClearOnExit, int isWaitForAllBits, int waitMs)
+{
+    return _kernel_api.os_apis->mico_rtos_eventgroup_wait_bits(handler, bits, isClearOnExit, isWaitForAllBits, waitMs);
+}
+
 OSStatus MicoPwmSwitchPin( mico_pwm_t pwm, mico_gpio_t gpio )
 {
     return _kernel_api.pwm_apis->pwm_switch_pin(pwm, gpio);
+}
+
+mico_thread_t mico_rtos_get_current_thread( void )
+{
+    return _kernel_api.os_apis->mico_rtos_get_current_thread();
+}
+
+void mico_rtos_set_thread_arg(mico_thread_t *thread, void *arg)
+{
+    _kernel_api.os_apis->mico_rtos_set_thread_arg(thread, arg);
+}
+
+void *mico_rtos_get_thread_arg(mico_thread_t *thread)
+{
+    return _kernel_api.os_apis->mico_rtos_get_thread_arg(thread);
+}
+
+mico_thread_t* mico_rtos_create_thread_static(uint8_t priority, const char* name, mico_thread_function_t function, uint32_t stack_size, void* arg, uint8_t *stackbuf, uint8_t *threadbuf )
+{
+    return _kernel_api.os_apis->mico_rtos_create_thread_static(priority, name, function, stack_size, arg, stackbuf, threadbuf);
+}
+
+OSStatus mico_rtos_try_lock_mutex( mico_mutex_t* mutex )
+{
+    return _kernel_api.os_apis->mico_rtos_try_lock_mutex(mutex);
+}
+
+/* �û�ʵ��������������û�ϣ��QC���������������д��buffer��, len��buffer����󳤶� 
+   QC���buffer�����������QC��SDS֮��ɨ��֮ǰ
+ */
+WEAK int user_qc_output(char *buffer, int len)
+{
+    return snprintf(buffer, len, "ID list: 11 22 33 44\r\n");
+}
+
+WEAK void dhcps_client_new(uint32_t client_ip)
+{
+}
+
+void mico_rtos_enter_critical(void)
+{
+    _kernel_api.os_apis->mico_rtos_enter_critical();
+}
+
+void mico_rtos_exit_critical(void)
+{
+    _kernel_api.os_apis->mico_rtos_exit_critical();
+}
+
+void mico_disable_health_monitor(void)
+{
+    _kernel_api.os_apis->system_config(0, 0);
 }

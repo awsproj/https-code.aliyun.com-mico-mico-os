@@ -52,7 +52,11 @@ static OSStatus system_config_mode_worker( void *arg )
 #elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_WAC)
     err = mico_easylink_wac( in_context, MICO_TRUE );
 #elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_AWS)
+#ifdef CONFIG_MICO_AWS
     err = mico_easylink_aws( in_context, MICO_TRUE );
+#else
+    err = kUnsupportedErr;
+#endif
 #elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_NONE)
 #else
     #error "Wi-Fi configuration mode is not defined"
@@ -72,6 +76,10 @@ OSStatus mico_system_wlan_start_autoconf( void )
 #endif
 }
 
+WEAK OSStatus user_application_callback( void )
+{
+    return kNoErr;
+}
 
 OSStatus mico_system_init( mico_Context_t* in_context )
 {
@@ -98,6 +106,10 @@ OSStatus mico_system_init( mico_Context_t* in_context )
   err = system_network_daemen_start( sys_context );
   require_noerr( err, exit ); 
 
+#ifdef MICO_USER_APPLICATION_CALLBACK_ENABLE
+    err = user_application_callback( );
+    require_noerr( err, exit );
+#endif
   
 #ifdef MICO_FORCE_OTA_ENABLE
 	err = start_forceota_check();
