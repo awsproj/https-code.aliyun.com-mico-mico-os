@@ -340,6 +340,7 @@ typedef struct mico_api_struct
     int (*mxchip_active_scan)( char*ssid, int is_adv );
     OSStatus (*wifi_manage_custom_ie_add)(wlan_if_t wlan_if, uint8_t *custom_ie, uint32_t len);
     OSStatus (*wifi_manage_custom_ie_delete)(wlan_if_t wlan_if);
+    void (*wifi_set_temp_macaddr)( uint8_t *mac );
 
     /* CLI APIs */
     int (*cli_init)(void);

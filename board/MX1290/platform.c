@@ -149,7 +149,7 @@ void init_platform( void )
     
     if ( get_last_reset_reason() & LAST_RST_CAUSE_WDT )
     {
-       platform_log( "WARNING: Watchdog reset occured previously." );
+//       platform_log( "WARNING: Watchdog reset occured previously." );
     }
 
     MicoGpioInitialize( (mico_gpio_t)MICO_SYS_LED, OUTPUT_PUSH_PULL );

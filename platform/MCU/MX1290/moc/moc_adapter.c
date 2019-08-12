@@ -200,6 +200,7 @@ mico_api_t *moc_adapter(new_mico_api_t *new_mico_api)
   mico_api.mxchip_active_scan = _kernel_api.wifi_apis->mxchip_active_scan;
   mico_api.wifi_manage_custom_ie_add = _kernel_api.wifi_apis->wifi_manage_custom_ie_add;
   mico_api.wifi_manage_custom_ie_delete = _kernel_api.wifi_apis->wifi_manage_custom_ie_delete;
+  mico_api.wifi_set_temp_macaddr = _kernel_api.wifi_apis->wifi_set_temp_macaddr;
   
   mico_api.cli_init = _kernel_api.cli_apis->cli_init;
   mico_api.cli_register_command = _kernel_api.cli_apis->cli_register_command;
@@ -350,6 +351,11 @@ int mico_wlan_start_monitor_awss()
 int mico_wlan_stop_monitor_awss()
 {
 	return _kernel_api.wifi_apis->mico_wlan_stop_monitor_awss();
+}
+
+void wifi_set_temp_mac_addr(uint8_t *mac)
+{
+    _kernel_api.wifi_apis->wifi_set_temp_macaddr(mac);
 }
 
 void ssl_set_ecc(int enable)
