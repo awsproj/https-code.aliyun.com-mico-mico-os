@@ -67,6 +67,21 @@ struct in_addr {
 /** 255.255.255.255 */
 #define INADDR_BROADCAST    ((uint32_t)0xffffffffUL)
 
+/** This is the aligned version of ip6_addr_t,
+    used as local variable, on the stack, etc. */
+struct ip6_addr {
+  uint32_t addr[4];
+};
+
+/** IPv6 address */
+typedef struct ip6_addr ip6_addr_t;
+/** IP6_ADDR_ANY can be used as a fixed IPv6 address
+ *  for the wildcard
+ */
+extern const ip6_addr_t ip6_addr_any;
+#define IP6_ADDR_ANY         ((ip6_addr_t *)&ip6_addr_any)
+
+
 /* members are in network byte order */
 struct sockaddr_in {
     uint8_t sin_len;
@@ -80,6 +95,15 @@ struct sockaddr {
     uint8_t sa_len;
     uint8_t sa_family;
     uint8_t sa_data[14];
+};
+
+struct sockaddr_in6 {
+  uint8_t            sin6_len;      /* length of this structure */
+  uint8_t     sin6_family;   /* AF_INET6                 */
+  uint16_t       sin6_port;     /* Transport layer port #   */
+  uint32_t           sin6_flowinfo; /* IPv6 flow information    */
+  struct ip6_addr sin6_addr;     /* IPv6 address             */
+  uint32_t           sin6_scope_id;
 };
 
 #ifndef socklen_t
@@ -118,12 +142,15 @@ struct addrinfo {
 
 #define AF_UNSPEC       0
 #define AF_INET         2
+#define AF_INET6        10
 #define PF_INET         AF_INET
 #define PF_UNSPEC       AF_UNSPEC
 
 #define IPPROTO_IP      0
 #define IPPROTO_TCP     6
 #define IPPROTO_UDP     17
+#define IPPROTO_IPV6    41
+#define IPPROTO_ICMPV6  58
 #define IPPROTO_UDPLITE 136
 
 #define F_GETFL 3
@@ -147,6 +174,18 @@ typedef struct ip_mreq {
     struct in_addr imr_multiaddr; /* IP multicast address of group */
     struct in_addr imr_interface; /* local IP address of interface */
 } ip_mreq;
+/*
+ * Options and types related to IPv6 multicast membership
+ */
+#define IPV6_JOIN_GROUP      12
+#define IPV6_ADD_MEMBERSHIP  IPV6_JOIN_GROUP
+#define IPV6_LEAVE_GROUP     13
+#define IPV6_DROP_MEMBERSHIP IPV6_LEAVE_GROUP
+
+typedef struct ipv6_mreq {
+  struct in6_addr ipv6mr_multiaddr; /*  IPv6 multicast addr */
+  unsigned int    ipv6mr_interface; /*  interface index, or 0 */
+} ipv6_mreq;
 
 
 /**
@@ -173,6 +212,9 @@ typedef enum {
     SO_NO_CHECK           = 0x100a      /**< Don't create UDP checksum. */
 
 } SOCK_OPT_VAL;
+
+#define IPV6_CHECKSUM       7  /* RFC3542: calculate and insert the ICMPv6 checksum for raw sockets. */
+#define IPV6_V6ONLY         27 /* RFC3493: boolean control to restrict AF_INET6 sockets to IPv6 communications only. */
 
 struct pollfd {
 	int fd; /**< fd related to */
