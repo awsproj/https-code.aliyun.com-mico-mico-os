@@ -183,7 +183,7 @@ typedef struct ip_mreq {
 #define IPV6_DROP_MEMBERSHIP IPV6_LEAVE_GROUP
 
 typedef struct ipv6_mreq {
-  struct in6_addr ipv6mr_multiaddr; /*  IPv6 multicast addr */
+  struct ip6_addr ipv6mr_multiaddr; /*  IPv6 multicast addr */
   unsigned int    ipv6mr_interface; /*  interface index, or 0 */
 } ipv6_mreq;
 

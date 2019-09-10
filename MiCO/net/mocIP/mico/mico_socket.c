@@ -97,7 +97,6 @@ int accept (int socket, struct sockaddr *addr, socklen_t *length_ptr)
 
 int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout)
 {
-	nfds = 64;
     return lib_api_p->lwip_apis->lwip_select(nfds, readfds, writefds, exceptfds, timeout);
 }
 
