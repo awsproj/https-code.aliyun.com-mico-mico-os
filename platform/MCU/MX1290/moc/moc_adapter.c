@@ -352,6 +352,21 @@ int mico_wlan_stop_monitor_awss()
 	return _kernel_api.wifi_apis->mico_wlan_stop_monitor_awss();
 }
 
+void mico_wlan_set_broadcast_awake(bool awake)
+{
+    _kernel_api.wifi_apis->pmu_set_broadcast_awake(awake);
+}
+
+void mico_wlan_set_broadcast_awake_port(uint16_t port)
+{
+    _kernel_api.wifi_apis->pmu_set_broadcast_awake_port(port);
+}
+
+uint16_t mico_wlan_get_broadcast_awake_port(void)
+{
+    return _kernel_api.wifi_apis->pmu_get_broadcast_awake_port();
+}
+
 void ssl_set_ecc(int enable)
 {
     _kernel_api.ssl_crypto_apis->ssl_set_ecc(enable);

@@ -220,6 +220,9 @@ typedef struct {
 	void (*mico_wlan_start_ap_with_asso_cb)(char *ssid, char *key, int channel, asso_event_handler_t fn);
 	int (*mico_wlan_start_monitor_awss)(void);
 	int (*mico_wlan_stop_monitor_awss)(void);
+	void (*pmu_set_broadcast_awake)(uint32_t NewStatus);
+	void (*pmu_set_broadcast_awake_port)(uint32_t AwakePort);
+	uint32_t (*pmu_get_broadcast_awake_port)(void);
 } wifi_api_v1_t;
 
 typedef struct {
