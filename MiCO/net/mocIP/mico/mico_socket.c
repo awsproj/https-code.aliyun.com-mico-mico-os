@@ -228,8 +228,7 @@ typedef void (*dns_found_callback)(const char *name, ip_addr_t *ipaddr, void *ca
 int dns_gethostbyname(const char *hostname, ip_addr_t *addr, dns_found_callback found,
                   void *callback_arg)
 {
-	return 0;
-	//return lib_api_p->lwip_apis->dns_gethostbyname(hostname,addr,found,callback_arg);
+	return lib_api_p->lwip_apis->dns_gethostbyname(hostname,addr,found,callback_arg);
 }
 
 int getaddrinfo(const char *nodename,
