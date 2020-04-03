@@ -86,26 +86,22 @@
 
 /* Tick */
 #define configCPU_CLOCK_HZ			( ( unsigned long ) MCU_CLOCK_HZ )
-#define configTICK_RATE_HZ			( ( TickType_t ) 1000 )
+#define configTICK_RATE_HZ			( ( TickType_t ) 500 )
 #define configUSE_16_BIT_TICKS		0
 
 /* Priorities */
 #define configKERNEL_INTERRUPT_PRIORITY 		255
-#define configMAX_SYSCALL_INTERRUPT_PRIORITY 	(1 << (8 - CORTEX_NVIC_PRIO_BITS))
-#define configLIBRARY_KERNEL_INTERRUPT_PRIORITY	((1 << CORTEX_NVIC_PRIO_BITS) - 1)
 
 /* Timers */
 #define configUSE_TIMERS                            ( 1 )
-#define configTIMER_TASK_PRIORITY                   ( 4 )
+#define configTIMER_TASK_PRIORITY                   ( 2 )
 #define configTIMER_QUEUE_LENGTH                    ( 5 )
-#ifndef configTIMER_TASK_STACK_DEPTH
-#define configTIMER_TASK_STACK_DEPTH                ( ( unsigned short ) (1024 / sizeof( portSTACK_TYPE )) )
-#endif
+#define configTIMER_TASK_STACK_DEPTH                ( ( unsigned short ) (2000 / sizeof( portSTACK_TYPE )) )
 
 /* Task */
 #define configMAX_PRIORITIES		( 10 )
 #define configUSE_PREEMPTION		1
-#define configMINIMAL_STACK_SIZE	( ( unsigned short ) 120 )
+#define configMINIMAL_STACK_SIZE	                ( ( unsigned short ) (512/2) )
 #define configMAX_TASK_NAME_LEN		( 16 )
 #define configIDLE_SHOULD_YIELD		1
 #define configUSE_CO_ROUTINES 		0
@@ -119,6 +115,7 @@ extern void rtos_suppress_and_sleep( unsigned long sleep_ms );
 
 /* Hooks */
 #define configUSE_IDLE_HOOK			0
+/* Hooks */
 #define configUSE_TICK_HOOK			0
 #define configUSE_MALLOC_FAILED_HOOK                ( 1 )
 
@@ -153,5 +150,6 @@ to exclude the API function. */
 #define INCLUDE_xTaskAbortDelay				1
 #define INCLUDE_xTaskGetCurrentTaskHandle	1
 
-#endif /* FREERTOS_CONFIG_H */
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY  191 /* equivalent to 0xb0, or priority 11. */
 
+#endif /* FREERTOS_CONFIG_H */

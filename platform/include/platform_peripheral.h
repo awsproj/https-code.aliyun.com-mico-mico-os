@@ -104,6 +104,7 @@ typedef enum
     IRQ_TRIGGER_BOTH_EDGES   = IRQ_TRIGGER_RISING_EDGE | IRQ_TRIGGER_FALLING_EDGE,
 } platform_gpio_irq_trigger_t;
 
+#ifndef CONFIG_MXCHIP
 /**
  * UART data width
  */
@@ -115,7 +116,9 @@ typedef enum
     DATA_WIDTH_8BIT,
     DATA_WIDTH_9BIT
 } platform_uart_data_width_t;
-
+#else
+typedef uint8_t platform_uart_data_width_t;
+#endif
 /**
  * UART stop bits
  */
