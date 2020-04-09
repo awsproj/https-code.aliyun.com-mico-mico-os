@@ -155,17 +155,17 @@ const mico_logic_partition_t mico_partitions[] =
             .partition_length          = 0x4000, //16k bytes
             .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
         },
-        [MICO_PARTITION_FILESYS] =
+        [MICO_PARTITION_FILESYS] = // sound remind
         {
-            .partition_owner           = MICO_FLASH_NONE,
+            .partition_owner           = MICO_FLASH_EMBEDDED,
             .partition_description     = "File system",
             .partition_start_addr      = 0x200000,
             .partition_length          = 0x9F000, //636K bytes
             .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
         },
-        [MICO_PARTITION_AUDIO] =
+        [MICO_PARTITION_AUDIO] = // songs
         {
-            .partition_owner           = MICO_FLASH_NONE,
+            .partition_owner           = MICO_FLASH_EMBEDDED,
             .partition_description     = "File system",
             .partition_start_addr      = 0x29F000,
             .partition_length          = 0x161000, //1412K bytes
