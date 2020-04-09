@@ -173,7 +173,15 @@ const mico_logic_partition_t mico_partitions[] =
         },
 };
 
-const platform_adc_t platform_adc_peripherals[] = {};
+const platform_adc_t platform_adc_peripherals[] = {
+    [MICO_ADC_1] = {.channel = MX_ADC_1},
+    [MICO_ADC_2] = {.channel = MX_ADC_2},
+    [MICO_ADC_3] = {.channel = MX_ADC_3},
+    [MICO_ADC_4] = {.channel = MX_ADC_4},
+    [MICO_ADC_5] = {.channel = MX_ADC_5},
+    [MICO_ADC_6] = {.channel = MX_ADC_6},
+    [MICO_ADC_7] = {.channel = MX_ADC_7},
+};
 
 /******************************************************
 *               Function Definitions
